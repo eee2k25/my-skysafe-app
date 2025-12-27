@@ -4,27 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKYSAFE - Fall Prevention System</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
         /* ============================
-           THEME DEFINITIONS
+           THEME DEFINITIONS & CSS VARIABLES
            ============================ */
         :root {
-            /* Default (Safety Yellow) */
-            --bg-body: #FFFFFF;
-            --bg-card: #F9FAFB;
-            --text-main: #111827;
+            /* DEFAULT THEME (Safety Yellow) */
+            --bg-body: #F3F4F6;
+            --bg-card: #FFFFFF;
+            --text-main: #1F2937;
             --text-sub: #6B7280;
+            
             --primary: #F59E0B;       /* Yellow-500 */
             --primary-dark: #D97706;  /* Yellow-600 */
-            --accent: #FCD34D;        /* Yellow-300 */
+            --accent: #FDE68A;        /* Yellow-200 */
+            
             --status-green: #22C55E;
             --status-red: #EF4444;
         }
 
-        /* Dark Mode Base */
+        /* DARK MODE OVERRIDES */
         .dark-mode {
             --bg-body: #111827;
             --bg-card: #1F2937;
@@ -35,57 +41,54 @@
         /* --- THEME: IRON MAN --- */
         body.theme-ironman {
             --primary: #B91C1C;      /* Deep Red */
-            --primary-dark: #991B1B; /* Darker Red */
-            --accent: #F59E0B;       /* Gold/Amber */
+            --primary-dark: #991B1B; 
+            --accent: #F59E0B;       /* Gold */
         }
 
         /* --- THEME: CAPTAIN AMERICA --- */
         body.theme-captain {
-            --primary: #1D4ED8;      /* Deep Blue */
-            --primary-dark: #1E3A8A; /* Navy */
+            --primary: #2563EB;      /* Blue */
+            --primary-dark: #1E3A8A; 
             --accent: #EF4444;       /* Red Shield */
         }
 
-        /* --- THEME: AVATAR (Pandora) --- */
+        /* --- THEME: AVATAR --- */
         body.theme-avatar {
-            --bg-body: #0F172A;      /* Dark Space Blue */
-            --bg-card: #1E293B;      /* Slate */
+            --bg-body: #0F172A;      
+            --bg-card: #1E293B;      
             --text-main: #E2E8F0;
             --text-sub: #94A3B8;
-            --primary: #06B6D4;      /* Cyan/Bioluminescent */
+            --primary: #06B6D4;      /* Cyan */
             --primary-dark: #0891B2;
             --accent: #A855F7;       /* Purple */
         }
 
-        /* --- THEME: ELEMENTALS (Nature) --- */
+        /* --- THEME: NATURE --- */
         body.theme-elemental {
-            --primary: #15803D;      /* Forest Green */
+            --primary: #15803D;      /* Green */
             --primary-dark: #14532D;
             --accent: #84CC16;       /* Lime */
         }
 
-        /* --- THEME: MARVEL (Deadpool/Comic) --- */
+        /* --- THEME: DEADPOOL --- */
         body.theme-marvel {
             --bg-body: #000000;
-            --bg-card: #202020;
+            --bg-card: #18181b;
             --text-main: #FFFFFF;
-            --text-sub: #AAAAAA;
-            --primary: #EF4444;      /* Bright Red */
-            --primary-dark: #7F1D1D; /* Blood Red */
-            --accent: #FFFFFF;       /* White Eyes */
+            --text-sub: #A1A1AA;
+            --primary: #DC2626;      /* Red */
+            --primary-dark: #7F1D1D;
+            --accent: #FFFFFF;
         }
 
         /* ============================
-           CORE STYLES
+           CORE CSS
            ============================ */
         * { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
         
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-        }
-
-        /* Dynamic Classes using CSS Variables */
+        body { background-color: var(--bg-body); color: var(--text-main); }
+        
+        /* Utility Classes using Vars */
         .app-bg { background-color: var(--bg-body); }
         .card-bg { background-color: var(--bg-card); }
         .text-main { color: var(--text-main); }
@@ -96,10 +99,9 @@
         }
         
         .text-theme { color: var(--primary); }
-        .bg-theme-light { background-color: var(--accent); opacity: 0.2; }
         .border-theme { border-color: var(--primary); }
         
-        /* Utility */
+        /* Animations */
         .screen { display: none; }
         .screen.active { display: flex; }
         
@@ -108,28 +110,23 @@
             border-top: 2px solid var(--primary); 
         }
         
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .status-pulse { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        @keyframes alarm-flash {
-            0%, 100% { background-color: #7f1d1d; }
-            50% { background-color: #ef4444; }
-        }
         .alarm-state { animation: alarm-flash 1s infinite; }
+        @keyframes alarm-flash { 0%, 100% { background-color: #7f1d1d; } 50% { background-color: #ef4444; } }
         
-        .theme-btn {
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        .theme-btn.active {
+        /* Input Focus Ring Colors */
+        input:focus, select:focus {
             border-color: var(--primary);
-            transform: scale(1.05);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent);
         }
     </style>
 </head>
@@ -137,350 +134,291 @@
 
     <div id="loginScreen" class="screen active flex-col min-h-screen justify-center items-center p-6 fade-in app-bg">
         <div class="text-center mb-10">
-            <div class="w-24 h-24 bg-theme-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <i class="fas fa-shield-alt text-white text-4xl"></i>
+            <div class="w-24 h-24 bg-theme-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                <i class="fas fa-shield-alt text-white text-5xl"></i>
             </div>
-            <h1 class="text-3xl font-bold text-main">SKYSAFE</h1>
-            <p class="text-sub mt-2">Fall Prevention System</p>
+            <h1 class="text-3xl font-extrabold text-main tracking-tight">SKYSAFE</h1>
+            <p class="text-sub mt-2 font-medium">Fall Prevention System v2.2</p>
         </div>
         
-        <div class="w-full max-w-sm">
+        <div class="w-full max-w-sm bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg card-bg">
             <div class="mb-4">
-                <label class="block text-sm font-medium text-sub mb-2">Username</label>
-                <input type="text" id="username" value="MEKG" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 card-bg text-main focus:outline-none focus:border-[var(--primary)]" placeholder="Enter username">
+                <label class="block text-sm font-bold text-sub mb-2 uppercase tracking-wider">Username</label>
+                <input type="text" id="username" value="MEKG" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 card-bg text-main font-semibold" placeholder="Enter username">
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-medium text-sub mb-2">Password</label>
-                <input type="password" id="password" value="@MEKS1" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 card-bg text-main focus:outline-none focus:border-[var(--primary)]" placeholder="Enter password">
+                <label class="block text-sm font-bold text-sub mb-2 uppercase tracking-wider">Password</label>
+                <input type="password" id="password" value="@MEKS1" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 card-bg text-main font-semibold" placeholder="Enter password">
             </div>
             <div class="mb-6">
-                <label class="block text-sm font-medium text-sub mb-2">Role</label>
-                <select id="userRole" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 card-bg text-main focus:outline-none focus:border-[var(--primary)]">
+                <label class="block text-sm font-bold text-sub mb-2 uppercase tracking-wider">Role</label>
+                <select id="userRole" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 card-bg text-main font-semibold">
                     <option value="admin">Admin</option>
                     <option value="engineer">Maintenance Engineer</option>
                     <option value="viewer">Viewer</option>
                 </select>
             </div>
-            <button onclick="handleLogin()" class="w-full bg-theme-gradient text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">
-                Sign In
+            
+            <button onclick="handleLogin()" class="w-full bg-theme-gradient text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transform active:scale-95 transition-all">
+                SECURE SIGN IN
             </button>
-            <p id="loginError" class="text-red-500 text-center mt-4 hidden">Invalid credentials</p>
+            
+            <p id="loginError" class="text-red-500 font-bold text-center mt-4 hidden text-sm bg-red-100 p-2 rounded-lg">
+                <i class="fas fa-times-circle mr-1"></i> Invalid Credentials
+            </p>
         </div>
-        
-        <p class="text-sub text-sm mt-8">Secure Access Portal v2.2</p>
     </div>
 
     <div id="mainApp" class="hidden flex-col min-h-screen app-bg">
         
-        <header class="bg-theme-gradient px-4 py-4 sticky top-0 z-50 shadow-md">
+        <header class="bg-theme-gradient px-5 py-4 sticky top-0 z-50 shadow-lg">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                         <i class="fas fa-shield-alt text-white text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="text-white font-bold text-lg">SKYSAFE</h1>
-                        <p class="text-white/80 text-xs" id="headerRole">Admin</p>
+                        <h1 class="text-white font-black text-lg tracking-wide">SKYSAFE</h1>
+                        <p class="text-white/90 text-xs font-medium" id="headerRole">ADMIN</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div id="systemStatusBadge" class="px-3 py-1 rounded-full bg-green-500 text-white text-xs font-semibold">
-                        NORMAL
+                    <div id="systemStatusBadge" class="px-3 py-1 rounded-full bg-green-500 text-white text-[10px] font-bold tracking-widest uppercase shadow-sm">
+                        ACTIVE
                     </div>
-                    <button onclick="handleLogout()" class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center hover:bg-white/30">
+                    <button onclick="handleLogout()" class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center hover:bg-white/30 transition-colors backdrop-blur-sm">
                         <i class="fas fa-sign-out-alt text-white"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <div id="pullIndicator" class="text-center py-0 overflow-hidden transition-all duration-300" style="height: 0px;">
-            <div class="py-4 flex flex-col items-center justify-center">
-                <div id="pullIcon" class="w-10 h-10 rounded-full flex items-center justify-center mb-2" style="background-color: var(--accent); opacity: 0.8;">
-                    <i id="pullIconInner" class="fas fa-arrow-down text-white text-lg"></i>
-                </div>
-                <p id="pullText" class="text-theme font-medium text-sm">Pull down to refresh</p>
-            </div>
-        </div>
-
-        <main id="contentArea" class="flex-1 overflow-y-auto scrollbar-hide pb-24" 
-              ontouchstart="handleTouchStart(event)" 
-              ontouchmove="handleTouchMove(event)" 
-              ontouchend="handleTouchEnd()">
+        <main id="contentArea" class="flex-1 overflow-y-auto scrollbar-hide pb-24 relative">
             
-            <div id="dashboardScreen" class="screen active flex-col p-4 fade-in">
-                <div class="flex items-start justify-between mb-6">
+            <div id="dashboardScreen" class="screen active flex-col p-5 fade-in">
+                <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-xl font-bold text-main mb-1">Dashboard</h2>
-                        <p class="text-sub text-sm">Real-time monitoring</p>
+                        <h2 class="text-2xl font-bold text-main">Overview</h2>
+                        <p class="text-sub text-sm">System metrics & health</p>
                     </div>
-                    <button onclick="manualRefresh()" class="w-10 h-10 card-bg rounded-xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700">
+                    <button onclick="manualRefresh()" class="w-10 h-10 card-bg rounded-xl flex items-center justify-center shadow-md border border-gray-100 dark:border-gray-700 active:scale-90 transition-transform">
                         <i class="fas fa-sync-alt text-theme"></i>
                     </button>
                 </div>
 
-                <div id="mainStatusCard" class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 mb-4 shadow-lg">
-                    <div class="flex items-center justify-between mb-4">
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 mb-5 shadow-lg text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                    <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-white/80 text-sm">System Status</p>
-                            <h3 id="mainStatus" class="text-white text-2xl font-bold">NORMAL</h3>
+                            <p class="text-green-100 text-sm font-medium mb-1">Current Status</p>
+                            <h3 class="text-3xl font-black tracking-tight">NORMAL</h3>
+                            <p class="text-green-100/80 text-xs mt-2">Zone A - No Threats</p>
                         </div>
-                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center status-pulse">
-                            <i id="mainStatusIcon" class="fas fa-check-circle text-white text-3xl"></i>
+                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center status-pulse backdrop-blur-sm">
+                            <i class="fas fa-check text-3xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div class="card-bg rounded-xl p-4 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--accent); color: var(--primary);">
-                                <i class="fas fa-satellite-dish"></i>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="card-bg rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--accent); color: var(--primary);">
+                                <i class="fas fa-wifi text-sm"></i>
                             </div>
-                            <div>
-                                <p class="text-sub text-xs">Sensors</p>
-                                <p class="text-main font-bold text-lg">2/2</p>
-                            </div>
+                            <span class="text-sub text-xs font-bold uppercase">Signal</span>
                         </div>
+                        <p class="text-main font-bold text-xl">Excellent</p>
                     </div>
-                    <div class="card-bg rounded-xl p-4 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-green-100 text-green-600">
-                                <i class="fas fa-bolt"></i>
+                    <div class="card-bg rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100 text-blue-600">
+                                <i class="fas fa-battery-full text-sm"></i>
                             </div>
-                            <div>
-                                <p class="text-sub text-xs">Power</p>
-                                <p class="text-main font-bold text-lg">MAIN</p>
-                            </div>
+                            <span class="text-sub text-xs font-bold uppercase">Power</span>
                         </div>
-                    </div>
-                    <div class="card-bg rounded-xl p-4 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-100 text-blue-600">
-                                <i class="fas fa-signal"></i>
-                            </div>
-                            <div>
-                                <p class="text-sub text-xs">GSM</p>
-                                <p class="text-main font-bold text-lg">4/5</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-bg rounded-xl p-4 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-100 text-purple-600">
-                                <i class="fas fa-wifi"></i>
-                            </div>
-                            <div>
-                                <p class="text-sub text-xs">Net</p>
-                                <p class="text-main font-bold text-lg">OK</p>
-                            </div>
-                        </div>
+                        <p class="text-main font-bold text-xl">100%</p>
                     </div>
                 </div>
             </div>
 
-            <div id="sensorsScreen" class="screen flex-col p-4 fade-in">
-                <h2 class="text-xl font-bold text-main mb-4">Sensor Array</h2>
-                
-                <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-theme shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--accent); opacity: 0.2;">
-                                <i class="fas fa-wave-square text-theme text-xl absolute"></i>
+            <div id="sensorsScreen" class="screen flex-col p-5 fade-in">
+                <h2 class="text-2xl font-bold text-main mb-6">Live Sensors</h2>
+
+                <div class="card-bg rounded-2xl p-6 mb-4 shadow-md border-l-4 border-theme relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--accent); color: var(--primary);">
+                                <i class="fas fa-ruler-vertical text-xl"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-main">Ultrasonic</h4>
-                                <p class="text-sub text-xs">HC-SR04</p>
+                                <h4 class="font-bold text-main text-lg">Distance</h4>
+                                <p class="text-sub text-xs font-medium">Ultrasonic HC-SR04</p>
                             </div>
                         </div>
-                        <span class="text-2xl font-bold text-main" id="ultrasonicDistance">-- cm</span>
+                        <span class="text-3xl font-black text-main" id="ultrasonicDistance">--</span>
                     </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-theme-gradient h-2 rounded-full" style="width: 70%"></div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                        <div class="bg-theme-gradient h-full rounded-full transition-all duration-500" style="width: 65%"></div>
                     </div>
                 </div>
 
-                <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-red-500 shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-temperature-high text-red-500 text-xl"></i>
+                <div class="card-bg rounded-2xl p-6 mb-4 shadow-md border-l-4 border-red-500 relative">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-red-100 text-red-500 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-fire text-xl"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-main">Thermal</h4>
-                                <p class="text-sub text-xs">MLX90614</p>
+                                <h4 class="font-bold text-main text-lg">Thermal</h4>
+                                <p class="text-sub text-xs font-medium">IR MLX90614</p>
                             </div>
                         </div>
-                        <span class="text-2xl font-bold text-main" id="thermalTemp">-- °C</span>
+                        <span class="text-3xl font-black text-main" id="thermalTemp">--°C</span>
                     </div>
-                    <p class="text-sub text-xs"><i class="fas fa-user-check mr-1"></i> Human Presence: <span id="humanPresence" class="font-bold text-main">NO</span></p>
+                    <div class="flex items-center gap-2 mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <i class="fas fa-user-tag text-sub text-xs"></i>
+                        <p class="text-sub text-xs font-bold uppercase">Human Presence:</p>
+                        <p id="humanPresence" class="font-bold text-green-500 text-sm">NO</p>
+                    </div>
                 </div>
             </div>
 
-            <div id="settingsScreen" class="screen flex-col p-4 fade-in">
-                <h2 class="text-xl font-bold text-main mb-6">Settings</h2>
+            <div id="settingsScreen" class="screen flex-col p-5 fade-in">
+                <h2 class="text-2xl font-bold text-main mb-6">Settings</h2>
 
-                <div class="card-bg rounded-2xl p-5 mb-4 shadow-sm">
-                    <h4 class="font-semibold text-main mb-4">Appearance & Theme</h4>
+                <div class="card-bg rounded-2xl p-6 shadow-md mb-6">
+                    <h4 class="font-bold text-main mb-4 flex items-center gap-2">
+                        <i class="fas fa-paint-roller text-theme"></i> Select Theme
+                    </h4>
                     
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <button onclick="setTheme('default')" class="theme-btn p-3 rounded-xl bg-gray-100 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-yellow-500"></div>
-                            <span class="text-sm font-medium text-gray-800">SkySafe</span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="setTheme('default')" class="p-3 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-yellow-500 border-2 border-white shadow-sm"></div>
+                            <span class="text-sm font-bold text-gray-700">Original</span>
                         </button>
 
-                        <button onclick="setTheme('ironman')" class="theme-btn p-3 rounded-xl bg-red-900 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-yellow-400 border-2 border-red-700"></div>
-                            <span class="text-sm font-medium text-white">Iron Man</span>
+                        <button onclick="setTheme('ironman')" class="p-3 rounded-xl bg-red-50 hover:bg-red-100 transition-colors flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-red-700 border-2 border-yellow-400 shadow-sm"></div>
+                            <span class="text-sm font-bold text-red-800">Iron Man</span>
                         </button>
 
-                        <button onclick="setTheme('captain')" class="theme-btn p-3 rounded-xl bg-blue-900 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-blue-600 border-2 border-white"></div>
-                            <span class="text-sm font-medium text-white">Captain</span>
+                        <button onclick="setTheme('captain')" class="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-blue-600 border-2 border-red-500 shadow-sm"></div>
+                            <span class="text-sm font-bold text-blue-800">Captain</span>
                         </button>
 
-                        <button onclick="setTheme('avatar')" class="theme-btn p-3 rounded-xl bg-slate-800 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-cyan-400 border-2 border-purple-500"></div>
-                            <span class="text-sm font-medium text-white">Avatar</span>
+                        <button onclick="setTheme('avatar')" class="p-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-cyan-500 border-2 border-purple-500 shadow-sm"></div>
+                            <span class="text-sm font-bold text-slate-700">Avatar</span>
                         </button>
                         
-                        <button onclick="setTheme('elemental')" class="theme-btn p-3 rounded-xl bg-green-900 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-green-500 border-2 border-lime-300"></div>
-                            <span class="text-sm font-medium text-white">Nature</span>
+                        <button onclick="setTheme('marvel')" class="p-3 rounded-xl bg-gray-800 hover:bg-black transition-colors flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-red-600 border-2 border-black shadow-sm"></div>
+                            <span class="text-sm font-bold text-white">Deadpool</span>
                         </button>
-
-                        <button onclick="setTheme('marvel')" class="theme-btn p-3 rounded-xl bg-black flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-red-600 border-2 border-white"></div>
-                            <span class="text-sm font-medium text-white">Deadpool</span>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                <i class="fas fa-moon text-gray-500 dark:text-gray-300 text-xs"></i>
-                            </div>
-                            <span class="text-main text-sm font-medium">Dark Mode Overlay</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="darkModeToggle" class="sr-only peer" onchange="toggleDarkMode()">
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary)]"></div>
-                        </label>
                     </div>
                 </div>
 
-                <div id="adminControls" class="card-bg rounded-2xl p-5 mb-4 shadow-sm hidden">
-                    <h4 class="font-semibold text-main mb-4">Admin Controls</h4>
-                    <button onclick="triggerEmergency()" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold mb-3">
-                        ⚠️ SIMULATE FALL
+                <div class="card-bg rounded-2xl p-6 shadow-md mb-6 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                            <i class="fas fa-moon text-gray-500 dark:text-gray-300"></i>
+                        </div>
+                        <span class="font-bold text-main">Dark Mode</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="darkModeToggle" class="sr-only peer" onchange="toggleDarkMode()">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary)]"></div>
+                    </label>
+                </div>
+
+                <div id="adminControls" class="card-bg rounded-2xl p-6 shadow-md hidden border border-red-100">
+                    <h4 class="font-bold text-red-500 mb-4 flex items-center gap-2">
+                        <i class="fas fa-lock"></i> Admin Controls
+                    </h4>
+                    <button onclick="triggerEmergency()" class="w-full py-4 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold shadow-lg shadow-red-500/30 transition-all active:scale-95">
+                        ⚠️ SIMULATE FALL EVENT
                     </button>
                 </div>
             </div>
 
-            <div id="gsmScreen" class="screen flex-col p-4 fade-in">
-                <h2 class="text-xl font-bold text-main mb-4">GSM Status</h2>
-                <div class="card-bg rounded-2xl p-5 text-center">
-                    <i class="fas fa-signal text-4xl text-green-500 mb-2"></i>
-                    <h3 class="text-main font-bold">Signal Strong</h3>
-                    <p class="text-sub text-sm">SIM800L Connected</p>
+            <div id="gsmScreen" class="screen flex-col p-5 fade-in">
+                <h2 class="text-2xl font-bold text-main mb-6">GSM Network</h2>
+                <div class="card-bg rounded-2xl p-10 text-center border-2 border-dashed border-gray-300 dark:border-gray-700">
+                    <i class="fas fa-signal text-6xl text-green-500 mb-4 opacity-50"></i>
+                    <h3 class="text-xl font-bold text-main">Connection Stable</h3>
+                    <p class="text-sub mt-2">SIM800L Module Ready</p>
                 </div>
             </div>
+            
         </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 card-bg border-t border-gray-200 dark:border-gray-800 max-w-md mx-auto shadow-lg z-50">
+        <nav class="fixed bottom-0 left-0 right-0 card-bg border-t border-gray-200 dark:border-gray-800 shadow-2xl z-40 pb-safe">
             <div class="flex justify-around py-3">
-                <button onclick="switchTab('dashboard')" class="nav-item active flex flex-col items-center px-3 text-sub transition-colors">
+                <button onclick="switchTab('dashboard')" class="nav-item active flex flex-col items-center px-4 py-1 transition-all hover:opacity-80">
                     <i class="fas fa-home text-xl mb-1"></i>
-                    <span class="text-[10px]">Home</span>
+                    <span class="text-[10px] font-bold">Home</span>
                 </button>
-                <button onclick="switchTab('sensors')" class="nav-item flex flex-col items-center px-3 text-sub transition-colors">
+                <button onclick="switchTab('sensors')" class="nav-item flex flex-col items-center px-4 py-1 transition-all hover:opacity-80">
                     <i class="fas fa-microchip text-xl mb-1"></i>
-                    <span class="text-[10px]">Sensors</span>
+                    <span class="text-[10px] font-bold">Sensors</span>
                 </button>
-                <button onclick="switchTab('gsm')" class="nav-item flex flex-col items-center px-3 text-sub transition-colors">
-                    <i class="fas fa-signal text-xl mb-1"></i>
-                    <span class="text-[10px]">GSM</span>
+                <button onclick="switchTab('gsm')" class="nav-item flex flex-col items-center px-4 py-1 transition-all hover:opacity-80">
+                    <i class="fas fa-broadcast-tower text-xl mb-1"></i>
+                    <span class="text-[10px] font-bold">GSM</span>
                 </button>
-                <button onclick="switchTab('settings')" class="nav-item flex flex-col items-center px-3 text-sub transition-colors">
+                <button onclick="switchTab('settings')" class="nav-item flex flex-col items-center px-4 py-1 transition-all hover:opacity-80">
                     <i class="fas fa-cog text-xl mb-1"></i>
-                    <span class="text-[10px]">Settings</span>
+                    <span class="text-[10px] font-bold">Settings</span>
                 </button>
             </div>
         </nav>
     </div>
 
-    <div id="emergencyModal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
-        <div class="bg-red-900 rounded-3xl p-8 max-w-sm w-full text-center border-4 border-red-500 animate-pulse shadow-2xl">
-            <i class="fas fa-exclamation-triangle text-white text-6xl mb-6"></i>
-            <h3 class="text-3xl font-black text-white mb-2">FALL DETECTED</h3>
-            <p class="text-red-100 mb-8 text-lg">Safety Net Deployed.<br>Calling Emergency Contacts...</p>
-            <button onclick="acknowledgeEmergency()" class="w-full bg-white text-red-600 font-bold py-4 rounded-xl shadow-lg hover:scale-105 transition-transform text-xl">
-                RESET SYSTEM
+    <div id="emergencyModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-red-600 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-pulse border-4 border-red-400">
+            <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-exclamation-triangle text-white text-5xl"></i>
+            </div>
+            <h3 class="text-3xl font-black text-white mb-2 uppercase tracking-wide">Fall Detected!</h3>
+            <p class="text-white/90 mb-8 text-lg font-medium">Safety Net Deployed.<br>Notifying Emergency Contacts...</p>
+            <button onclick="acknowledgeEmergency()" class="w-full bg-white text-red-600 font-black py-4 rounded-xl shadow-lg hover:bg-gray-100 transition-colors text-lg uppercase tracking-wider">
+                Reset System
             </button>
         </div>
     </div>
 
     <script>
-        // ============================
-        // JAVASCRIPT LOGIC
-        // ============================
-        
-        // --- 1. THEME MANAGEMENT ---
-        function setTheme(themeName) {
-            const body = document.body;
-            // Remove all existing theme classes
-            body.classList.remove('theme-ironman', 'theme-captain', 'theme-avatar', 'theme-elemental', 'theme-marvel');
-            
-            // Add new theme class (unless default)
-            if (themeName !== 'default') {
-                body.classList.add(`theme-${themeName}`);
-            }
+        // --- AUTHENTICATION ---
+        // Allow "Enter" key for password
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') handleLogin();
+        });
 
-            // Save preference
-            localStorage.setItem('skySafeThemeName', themeName);
-            
-            // Update UI buttons (visual feedback)
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-            // In a real app, you'd find the specific button and add active class
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('skySafeDarkMode', isDark);
-        }
-
-        function loadPreferences() {
-            // Load Color Theme
-            const savedTheme = localStorage.getItem('skySafeThemeName') || 'default';
-            setTheme(savedTheme);
-
-            // Load Dark Mode
-            const savedDark = localStorage.getItem('skySafeDarkMode') === 'true';
-            if (savedDark) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('darkModeToggle').checked = true;
-            }
-        }
-
-        // --- 2. AUTHENTICATION ---
         function handleLogin() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+            // .trim() removes spaces before/after text
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
             const role = document.getElementById('userRole').value;
 
             if (user === 'MEKG' && pass === '@MEKS1') {
+                // Success: Hide Login, Show App
                 document.getElementById('loginScreen').classList.remove('active');
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('mainApp').classList.add('flex');
+                
+                // Update Role Text
                 document.getElementById('headerRole').textContent = role.toUpperCase();
                 
+                // Show Admin Button if Admin
                 if (role === 'admin') {
                     document.getElementById('adminControls').classList.remove('hidden');
                 }
                 
                 initializeApp();
             } else {
+                // Failure: Show Error
                 const err = document.getElementById('loginError');
                 err.classList.remove('hidden');
                 setTimeout(() => err.classList.add('hidden'), 3000);
@@ -491,72 +429,106 @@
             location.reload();
         }
 
-        // --- 3. NAVIGATION ---
+        // --- THEME & SETTINGS ---
+        function setTheme(themeName) {
+            const body = document.body;
+            // Clear old classes
+            body.classList.remove('theme-ironman', 'theme-captain', 'theme-avatar', 'theme-elemental', 'theme-marvel');
+            
+            // Add new class if not default
+            if (themeName !== 'default') {
+                body.classList.add(`theme-${themeName}`);
+            }
+            localStorage.setItem('skySafeThemeName', themeName);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('skySafeDarkMode', isDark);
+        }
+
+        function loadPreferences() {
+            // 1. Load Theme Color
+            const savedTheme = localStorage.getItem('skySafeThemeName') || 'default';
+            setTheme(savedTheme);
+
+            // 2. Load Dark Mode
+            const savedDark = localStorage.getItem('skySafeDarkMode') === 'true';
+            if (savedDark) {
+                document.body.classList.add('dark-mode');
+                const toggle = document.getElementById('darkModeToggle');
+                if(toggle) toggle.checked = true;
+            }
+        }
+
+        // --- NAVIGATION ---
         function switchTab(tabName) {
             // Hide all screens
             document.querySelectorAll('.screen').forEach(s => {
                 if(s.id !== 'loginScreen') s.classList.remove('active');
             });
-            // Show target screen
+            // Show target
             document.getElementById(tabName + 'Screen').classList.add('active');
             
-            // Update nav styling
+            // Update buttons
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if(event && event.currentTarget) event.currentTarget.classList.add('active');
         }
 
-        // --- 4. SIMULATION LOGIC ---
+        // --- APP SIMULATION ---
         function initializeApp() {
+            // Update sensors every 2 seconds
             setInterval(updateSensorData, 2000);
+            updateSensorData();
         }
 
         function updateSensorData() {
-            // Simulate random sensor fluctuation
+            // Random Distance (140-160cm)
             const dist = Math.floor(Math.random() * (160 - 140) + 140);
+            
+            // Random Temp (35-37°C)
             const temp = (Math.random() * (37 - 35) + 35).toFixed(1);
             
-            document.getElementById('ultrasonicDistance').textContent = dist + ' cm';
-            document.getElementById('thermalTemp').textContent = temp + ' °C';
+            // Update UI
+            const distEl = document.getElementById('ultrasonicDistance');
+            if(distEl) distEl.textContent = dist + ' cm';
             
-            // Logic for human presence
+            const tempEl = document.getElementById('thermalTemp');
+            if(tempEl) tempEl.textContent = temp + ' °C';
+            
+            // Logic: Is this a human?
             const isHuman = temp > 36.0 && temp < 38.0;
             const hpEl = document.getElementById('humanPresence');
-            hpEl.textContent = isHuman ? 'YES' : 'NO';
-            hpEl.style.color = isHuman ? 'var(--status-green)' : 'var(--text-main)';
+            if(hpEl) {
+                hpEl.textContent = isHuman ? 'YES' : 'NO';
+                hpEl.className = isHuman ? 'font-bold text-green-500 text-sm' : 'font-bold text-gray-400 text-sm';
+            }
         }
 
-        // --- 5. EMERGENCY SYSTEM ---
+        // --- EMERGENCY ---
         function triggerEmergency() {
             document.getElementById('emergencyModal').classList.remove('hidden');
-            // Flash red background on body
-            document.body.classList.add('alarm-state');
+            document.body.classList.add('alarm-state'); // Flashing background
         }
 
         function acknowledgeEmergency() {
             document.getElementById('emergencyModal').classList.add('hidden');
             document.body.classList.remove('alarm-state');
-            alert("System Reset. Log entry created.");
+            alert("System Reset. Returning to monitoring.");
         }
 
-        // --- 6. PULL TO REFRESH (Simplified) ---
         function manualRefresh() {
             const icon = document.querySelector('.fa-sync-alt');
-            icon.classList.add('fa-spin');
+            if(icon) icon.classList.add('fa-spin');
             setTimeout(() => {
                 updateSensorData();
-                icon.classList.remove('fa-spin');
-            }, 1000);
+                if(icon) icon.classList.remove('fa-spin');
+            }, 800);
         }
 
-        // Initialize preferences on load
+        // Start
         loadPreferences();
-
-        // Pull to refresh placeholders (Touch logic)
-        let touchStart = 0;
-        function handleTouchStart(e) { touchStart = e.touches[0].clientY; }
-        function handleTouchMove(e) { /* Logic omitted for brevity, handled by scroll */ }
-        function handleTouchEnd(e) { /* Logic omitted */ }
-
     </script>
 </body>
 </html>
