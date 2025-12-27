@@ -16,11 +16,6 @@
             --border-color: #1f2a36;
         }
 
-        /* Dark Mode overrides (if needed later) */
-        .dark {
-            --bg-body: #000000;
-        }
-
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
@@ -30,7 +25,7 @@
         }
 
         /* =========================
-           2. THEME DEFINITIONS (FROM YOUR REQUEST)
+           2. THEME DEFINITIONS
            ========================= */
         
         /* DEFAULT – SKYSAFE YELLOW */
@@ -39,7 +34,7 @@
             --secondary: #FCD34D;
             --accent: #22C55E;
         }
-        /* IRON MAN MARK II – Red & Gold */
+        /* IRON MAN – Red & Gold */
         .theme-ironman {
             --primary: #B91C1C;     /* Iron Red */
             --secondary: #F59E0B;   /* Gold */
@@ -63,7 +58,7 @@
             --secondary: #111827;   /* Black */
             --accent: #9CA3AF;      /* Ice Gray */
         }
-        /* AVATAR – WAY OF WATER */
+        /* AVATAR */
         .theme-avatar {
             --primary: #0284C7;     /* Ocean Blue */
             --secondary: #0EA5E9;   /* Aqua */
@@ -75,22 +70,16 @@
            ========================= */
         .bg-theme {
             background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white; /* Ensure text is readable on colored headers */
+            color: white; 
         }
         
-        .text-theme {
-            color: var(--primary);
-        }
-        
-        .border-theme {
-            border-color: var(--primary);
-        }
+        .text-theme { color: var(--primary); }
+        .border-theme { border-color: var(--primary); }
 
         /* =========================
-           4. LAYOUT & COMPONENT STYLES
+           4. LAYOUT & STYLES
            ========================= */
         header {
-            /* This corresponds to: sticky top-0 z-50 px-4 py-4 */
             position: sticky;
             top: 0;
             z-index: 50;
@@ -118,56 +107,35 @@
             background: var(--bg-card);
             border-radius: 12px;
             padding: 20px;
-            border-left: 4px solid var(--primary); /* Uses theme primary */
+            border-left: 4px solid var(--primary);
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: transform 0.2s, border-color 0.3s;
+            transition: transform 0.2s;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-        }
+        .card:hover { transform: translateY(-2px); }
 
-        .card-bg {
-            background: #1f2937; /* Lighter dark for settings panel */
-        }
-
-        /* =========================
-           5. UTILITIES (Simulating Tailwind classes)
-           ========================= */
+        /* Settings Panel Styling */
+        .card-bg { background: #1f2937; }
         .hidden { display: none; }
-        .grid { display: grid; }
-        .grid-cols-2 { grid-template-columns: 1fr 1fr; }
-        .gap-3 { gap: 12px; }
-        .p-5 { padding: 20px; }
+        
+        /* Buttons */
+        button { border: none; cursor: pointer; transition: filter 0.2s; }
+        button:hover { filter: brightness(1.1); }
+        
+        .grid-cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .p-3 { padding: 12px; }
-        .mb-4 { margin-bottom: 16px; }
-        .rounded-2xl { border-radius: 16px; }
         .rounded-xl { border-radius: 12px; }
-        .font-semibold { font-weight: 600; }
         .font-medium { font-weight: 500; }
-        .text-white { color: white; }
-        .cursor-pointer { cursor: pointer; }
 
-        /* Button resets */
-        button {
-            border: none;
-            cursor: pointer;
-            transition: filter 0.2s;
-        }
-        button:hover {
-            filter: brightness(1.1);
-        }
-
-        /* Specific Button Colors based on your request */
+        /* Button Colors */
         .bg-yellow-100 { background: #FEF3C7; color: #92400E; }
         .bg-red-700 { background: #B91C1C; color: white; }
         .bg-blue-700 { background: #1D4ED8; color: white; }
-        .bg-black { background: #111827; }
-        .text-red-500 { color: #EF4444; }
+        .bg-black { background: #111827; color: #EF4444; }
         .bg-gray-800 { background: #1F2937; color: #E5E7EB; }
         .bg-sky-500 { background: #0EA5E9; color: white; }
 
-        /* Toggle Button */
+        /* Gear Icon Button */
         .btn-icon {
             background: rgba(255,255,255,0.2);
             border-radius: 50%;
@@ -194,125 +162,19 @@
     </header>
 
     <div id="settingsPanel" class="hidden" style="padding: 20px;">
-        
-        <div class="card-bg rounded-2xl p-5 mb-4" style="max-width: 600px; margin: 0 auto; border: 1px solid #374151;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h4 class="font-semibold text-theme mb-4" style="font-size:1.1rem; margin-top:0;">Theme Selection</h4>
+        <div class="card-bg rounded-xl" style="padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #374151;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                <h4 class="text-theme" style="margin:0; font-size:1.1rem;">Pick a Theme</h4>
                 <button onclick="toggleSettings()" style="background:none; color:#9ca3af; font-size:1.5rem;">&times;</button>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="setTheme('theme-default')" class="p-3 rounded-xl bg-yellow-100 font-medium">
-                    SKYSAFE Default
-                </button>
-                <button onclick="setTheme('theme-ironman')" class="p-3 rounded-xl bg-red-700 text-white font-medium">
-                    Iron Man
-                </button>
-                <button onclick="setTheme('theme-captain')" class="p-3 rounded-xl bg-blue-700 text-white font-medium">
-                    Captain America
-                </button>
-                <button onclick="setTheme('theme-deadpool')" class="p-3 rounded-xl bg-black text-red-500 font-medium">
-                    Deadpool
-                </button>
-                <button onclick="setTheme('theme-got')" class="p-3 rounded-xl bg-gray-800 text-gray-200 font-medium">
-                    Game of Thrones
-                </button>
-                <button onclick="setTheme('theme-avatar')" class="p-3 rounded-xl bg-sky-500 text-white font-medium">
-                    Avatar
-                </button>
-            </div>
-            
-            <div style="margin-top: 15px; border-top: 1px solid #374151; padding-top: 10px;">
-                <button onclick="triggerEmergency()" style="width:100%; padding: 10px; background: #EF4444; color: white; border-radius: 8px; font-weight: bold;">
-                    ⚠️ TEST EMERGENCY OVERRIDE
-                </button>
+            <div class="grid-cols-2">
+                <button onclick="setTheme('theme-default')" class="p-3 rounded-xl bg-yellow-100 font-medium">Default</button>
+                <button onclick="setTheme('theme-ironman')" class="p-3 rounded-xl bg-red-700 font-medium">Iron Man</button>
+                <button onclick="setTheme('theme-captain')" class="p-3 rounded-xl bg-blue-700 font-medium">Captain</button>
+                <button onclick="setTheme('theme-deadpool')" class="p-3 rounded-xl bg-black font-medium">Deadpool</button>
+                <button onclick="setTheme('theme-got')" class="p-3 rounded-xl bg-gray-800 font-medium">GOT</button>
+                <button onclick="setTheme('theme-avatar')" class="p-3 rounded-xl bg-sky-500 font-medium">Avatar</button>
             </div>
         </div>
     </div>
-
-    <main>
-        <div class="card">
-            <h3 class="text-theme">Ultrasonic Sensor</h3>
-            <div style="margin-bottom: 10px;">
-                <strong>Distance:</strong> <span style="font-size: 1.2em;">120 cm</span>
-            </div>
-            <div>Status: <span style="color: var(--accent);">Normal</span></div>
-        </div>
-
-        <div class="card">
-            <h3 class="text-theme">Thermal Camera</h3>
-            <div style="margin-bottom: 10px;">
-                <strong>Temp:</strong> <span style="font-size: 1.2em;">36.5°C</span>
-            </div>
-            <div>Heat Signature: <span style="color: var(--accent);">None</span></div>
-        </div>
-
-        <div class="card">
-            <h3 class="text-theme">System Logs</h3>
-            <ul style="padding-left: 20px; color: var(--text-muted); font-size: 0.9em;">
-                <li>System initialized...</li>
-                <li>Theme loaded from storage...</li>
-                <li>Waiting for sensor input...</li>
-            </ul>
-        </div>
-    </main>
-
-    <script>
-        // A. Toggle Settings Panel
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            if (panel.classList.contains('hidden')) {
-                panel.classList.remove('hidden');
-            } else {
-                panel.classList.add('hidden');
-            }
-        }
-
-        // B. Set Theme Function (From your request)
-        function setTheme(themeName) {
-            const root = document.documentElement;
-
-            // Remove all known theme classes
-            root.classList.remove(
-                'theme-default',
-                'theme-ironman',
-                'theme-captain',
-                'theme-deadpool',
-                'theme-got',
-                'theme-avatar'
-            );
-
-            // Add the selected theme
-            root.classList.add(themeName);
-            
-            // Persist to localStorage
-            localStorage.setItem('skySafeThemeColor', themeName);
-            
-            console.log(`Theme set to: ${themeName}`);
-        }
-
-        // C. Load Preferences on Startup
-        function loadPreferences() {
-            const savedTheme = localStorage.getItem('skySafeThemeColor') || 'theme-default';
-            document.documentElement.classList.add(savedTheme);
-
-            const savedMode = localStorage.getItem('skySafeTheme');
-            if (savedMode === 'dark') {
-                // Logic for dark mode if you implement a toggle later
-                document.documentElement.classList.add('dark');
-            }
-        }
-
-        // D. Emergency Override (Optional Cool Feature)
-        function triggerEmergency() {
-            // Forces the primary color to Red temporarily
-            document.documentElement.style.setProperty('--primary', '#EF4444');
-            document.documentElement.style.setProperty('--secondary', '#7F1D1D');
-            alert("EMERGENCY PROTOCOL ACTIVATED: Theme overridden.");
-        }
-
-        // Run on load
-        loadPreferences();
-    </script>
-</body>
-</html>
