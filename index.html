@@ -1,6 +1,3 @@
-COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
-================================================================================
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,14 +67,23 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
         .text-primary { color: var(--text-primary); }
         .text-secondary { color: var(--text-secondary); }
         .bg-main { background-color: var(--bg-light); }
+        
+        /* FIXED SCROLLBAR AND ALARM ANIMATION */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes alarm-flash {
+            0%, 100% { background-color: #7f1d1d; } /* Dark Red */
+            50% { background-color: #ef4444; } /* Bright Red */
+        }
+        .alarm-state {
+            animation: alarm-flash 1s infinite;
+        }
     </style>
 </head>
 <body class="bg-main min-h-screen">
     <div id="app" class="max-w-md mx-auto bg-main min-h-screen relative">
         
-        <!-- Login Screen -->
         <div id="loginScreen" class="screen active flex-col min-h-screen justify-center items-center p-6 fade-in">
             <div class="text-center mb-10">
                 <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -113,10 +119,8 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
             <p class="text-secondary text-sm mt-8">Secure Access Portal v2.1</p>
         </div>
 
-        <!-- Main App Container -->
         <div id="mainApp" class="hidden flex-col min-h-screen">
             
-            <!-- Header -->
             <header class="bg-gradient-to-r from-yellow-400 to-yellow-500 px-4 py-4 sticky top-0 z-50">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -139,7 +143,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                 </div>
             </header>
 
-            <!-- Pull to Refresh Indicator -->
             <div id="pullIndicator" class="text-center py-0 overflow-hidden transition-all duration-300" style="height: 0px;">
                 <div class="py-4 flex flex-col items-center justify-center">
                     <div id="pullIcon" class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mb-2">
@@ -152,13 +155,11 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                 </div>
             </div>
 
-            <!-- Content Area -->
             <main id="contentArea" class="flex-1 overflow-y-auto scrollbar-hide pb-20" 
                   ontouchstart="handleTouchStart(event)" 
                   ontouchmove="handleTouchMove(event)" 
                   ontouchend="handleTouchEnd()">
                 
-                <!-- Dashboard Screen -->
                 <div id="dashboardScreen" class="screen active flex-col p-4 fade-in">
                     <div class="flex items-start justify-between mb-6">
                         <div>
@@ -170,7 +171,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </button>
                     </div>
 
-                    <!-- Main Status Card -->
                     <div id="mainStatusCard" class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 mb-4 shadow-lg">
                         <div class="flex items-center justify-between mb-4">
                             <div>
@@ -193,7 +193,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Quick Stats -->
                     <div class="grid grid-cols-2 gap-3 mb-4">
                         <div class="card-bg rounded-xl p-4">
                             <div class="flex items-center gap-3">
@@ -241,19 +240,16 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Recent Events -->
                     <div class="card-bg rounded-xl p-4">
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="font-semibold text-primary">Recent Activity</h4>
                             <span class="text-yellow-500 text-sm cursor-pointer" onclick="switchTab('logs')">View All</span>
                         </div>
                         <div id="recentEvents" class="space-y-2">
-                            <!-- Events populated by JS -->
-                        </div>
+                            </div>
                     </div>
                 </div>
 
-                <!-- Sensors Screen -->
                 <div id="sensorsScreen" class="screen flex-col p-4 fade-in">
                     <div class="flex items-start justify-between mb-6">
                         <div>
@@ -265,7 +261,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </button>
                     </div>
 
-                    <!-- Ultrasonic Sensor Card -->
                     <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-yellow-400">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
@@ -297,7 +292,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Thermal Sensor Card -->
                     <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-red-400">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
@@ -329,7 +323,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Arduino Controller Card -->
                     <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-blue-400">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
@@ -366,14 +359,12 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                     </div>
                 </div>
 
-                <!-- Safety Net Screen -->
                 <div id="safetyNetScreen" class="screen flex-col p-4 fade-in">
                     <div class="mb-6">
                         <h2 class="text-xl font-bold text-primary mb-1">Safety Net System</h2>
                         <p class="text-secondary text-sm">Motor and deployment status</p>
                     </div>
 
-                    <!-- Net Status Visual -->
                     <div id="netVisual" class="card-bg rounded-2xl p-6 mb-4 text-center">
                         <div class="w-32 h-32 mx-auto mb-4 relative">
                             <div class="absolute inset-0 bg-green-100 rounded-full flex items-center justify-center">
@@ -385,7 +376,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         <p class="text-secondary text-sm">Ready for deployment</p>
                     </div>
 
-                    <!-- Motor Status -->
                     <div class="card-bg rounded-2xl p-5 mb-4">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -414,7 +404,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Deployment Info -->
                     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl p-4">
                         <h4 class="font-semibold text-yellow-700 dark:text-yellow-400 mb-2">
                             <i class="fas fa-info-circle mr-2"></i>Physical Intervention
@@ -425,14 +414,12 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                     </div>
                 </div>
 
-                <!-- GSM Screen -->
                 <div id="gsmScreen" class="screen flex-col p-4 fade-in">
                     <div class="mb-6">
                         <h2 class="text-xl font-bold text-primary mb-1">GSM & Alerts</h2>
                         <p class="text-secondary text-sm">Emergency communication status</p>
                     </div>
 
-                    <!-- Signal Strength -->
                     <div class="card-bg rounded-2xl p-5 mb-4">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-3">
@@ -468,7 +455,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Emergency Contacts -->
                     <div class="card-bg rounded-2xl p-5 mb-4">
                         <h4 class="font-semibold text-primary mb-4">Emergency Contacts</h4>
                         <div class="space-y-3">
@@ -511,7 +497,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- GSM Info -->
                     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4">
                         <h4 class="font-semibold text-blue-700 dark:text-blue-400 mb-2">
                             <i class="fas fa-info-circle mr-2"></i>Offline Communication
@@ -522,14 +507,12 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                     </div>
                 </div>
 
-                <!-- Power Screen -->
                 <div id="powerScreen" class="screen flex-col p-4 fade-in">
                     <div class="mb-6">
                         <h2 class="text-xl font-bold text-primary mb-1">Power & Health</h2>
                         <p class="text-secondary text-sm">System diagnostics</p>
                     </div>
 
-                    <!-- Power Status -->
                     <div class="card-bg rounded-2xl p-5 mb-4">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -570,7 +553,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- System Uptime -->
                     <div class="card-bg rounded-2xl p-5 mb-4">
                         <h4 class="font-semibold text-primary mb-4">System Uptime</h4>
                         <div class="grid grid-cols-4 gap-2 text-center">
@@ -593,7 +575,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Error Flags -->
                     <div class="card-bg rounded-2xl p-5">
                         <h4 class="font-semibold text-primary mb-4">System Diagnostics</h4>
                         <div id="errorFlags" class="space-y-2">
@@ -617,14 +598,12 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                     </div>
                 </div>
 
-                <!-- Logs Screen -->
                 <div id="logsScreen" class="screen flex-col p-4 fade-in">
                     <div class="mb-6">
                         <h2 class="text-xl font-bold text-primary mb-1">Event History</h2>
                         <p class="text-secondary text-sm">Chronological system logs</p>
                     </div>
 
-                    <!-- Filter Tabs -->
                     <div class="flex gap-2 mb-4 overflow-x-auto scrollbar-hide">
                         <button onclick="filterLogs('all')" class="log-filter active px-4 py-2 bg-yellow-400 text-white rounded-full text-sm font-medium whitespace-nowrap">All Events</button>
                         <button onclick="filterLogs('detection')" class="log-filter px-4 py-2 bg-gray-200 text-gray-600 rounded-full text-sm font-medium whitespace-nowrap">Detection</button>
@@ -632,20 +611,16 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         <button onclick="filterLogs('maintenance')" class="log-filter px-4 py-2 bg-gray-200 text-gray-600 rounded-full text-sm font-medium whitespace-nowrap">Maintenance</button>
                     </div>
 
-                    <!-- Log Entries -->
                     <div id="logEntries" class="space-y-3">
-                        <!-- Logs populated by JS -->
-                    </div>
+                        </div>
                 </div>
 
-                <!-- Settings Screen -->
                 <div id="settingsScreen" class="screen flex-col p-4 fade-in">
                     <div class="mb-6">
                         <h2 class="text-xl font-bold text-primary mb-1">Settings</h2>
                         <p class="text-secondary text-sm">System configuration</p>
                     </div>
 
-                    <!-- UI Preferences -->
                     <div class="card-bg rounded-2xl p-5 mb-4">
                         <h4 class="font-semibold text-primary mb-4">UI Preferences</h4>
                         
@@ -681,7 +656,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- System Thresholds (View Only) -->
                     <div class="card-bg rounded-2xl p-5 mb-4">
                         <div class="flex items-center justify-between mb-4">
                             <h4 class="font-semibold text-primary">System Thresholds</h4>
@@ -708,7 +682,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- Maintenance Mode (Admin Only) -->
                     <div id="maintenanceModeSection" class="card-bg rounded-2xl p-5 mb-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
@@ -727,7 +700,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                         </div>
                     </div>
 
-                    <!-- App Info -->
                     <div class="card-bg rounded-2xl p-5">
                         <h4 class="font-semibold text-primary mb-4">About SKYSAFE</h4>
                         <div class="space-y-2 text-sm">
@@ -749,7 +721,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
 
             </main>
 
-            <!-- Bottom Navigation -->
             <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 max-w-md mx-auto">
                 <div class="flex justify-around py-2">
                     <button onclick="switchTab('dashboard')" class="nav-item active flex flex-col items-center py-2 px-3 text-gray-500">
@@ -784,7 +755,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
             </nav>
         </div>
 
-        <!-- Emergency Alert Modal -->
         <div id="emergencyModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full animate-pulse">
                 <div class="text-center">
@@ -1149,16 +1119,46 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
             document.getElementById('uptimeSecs').textContent = secs.toString().padStart(2, '0');
         }
 
-        function simulateDataChanges() {
-            mockSensorData.ultrasonic.distance += Math.floor(Math.random() * 10) - 5;
-            mockSensorData.ultrasonic.distance = Math.max(50, Math.min(400, mockSensorData.ultrasonic.distance));
-            
-            mockSensorData.thermal.temperature = (parseFloat(mockSensorData.thermal.temperature) + (Math.random() * 0.4 - 0.2)).toFixed(1);
-            
-            if (Math.random() > 0.95) {
-                mockSensorData.thermal.humanPresence = !mockSensorData.thermal.humanPresence;
+        // ===================
+        // Hardware Connection
+        // ===================
+        async function fetchRealHardwareData() {
+            try {
+                // Replace with your ESP32 IP address when ready
+                const response = await fetch('http://192.168.4.1/api/status', { signal: AbortSignal.timeout(1000) });
+                if (!response.ok) throw new Error('Hardware offline');
+                const realData = await response.json();
+                
+                // Update variables with real data
+                mockSensorData.ultrasonic.distance = realData.distance;
+                mockSensorData.thermal.temperature = realData.temp;
+                return true; // Success
+            } catch (error) {
+                return false; // Failed, use simulation
+            }
+        }
+
+        async function simulateDataChanges() {
+            // Try to get real data first
+            const isRealData = await fetchRealHardwareData();
+
+            // Only use random numbers if real hardware is NOT connected
+            if (!isRealData) {
+                mockSensorData.ultrasonic.distance += Math.floor(Math.random() * 10) - 5;
+                mockSensorData.ultrasonic.distance = Math.max(50, Math.min(400, mockSensorData.ultrasonic.distance));
+                
+                mockSensorData.thermal.temperature = (parseFloat(mockSensorData.thermal.temperature) + (Math.random() * 0.4 - 0.2)).toFixed(1);
+                
+                if (Math.random() > 0.95) {
+                    mockSensorData.thermal.humanPresence = !mockSensorData.thermal.humanPresence;
+                }
             }
             
+            // Random emergency trigger (only in simulation mode)
+            if (!isRealData && Math.random() > 0.998 && systemStatus === 'normal') {
+                triggerEmergency();
+            }
+
             mockSystemData.power.mainVoltage = (11.8 + Math.random() * 0.4).toFixed(1);
             mockSystemData.power.backupVoltage = (11.5 + Math.random() * 0.5).toFixed(1);
             
@@ -1166,10 +1166,6 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
             document.getElementById('backupVoltage').textContent = mockSystemData.power.backupVoltage;
             
             updateSensorDisplay();
-            
-            if (Math.random() > 0.998 && systemStatus === 'normal') {
-                triggerEmergency();
-            }
         }
 
         // ===================
@@ -1279,6 +1275,9 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
         function triggerEmergency() {
             systemStatus = 'emergency';
             
+            // Add Visual Alarm
+            document.body.classList.add('alarm-state');
+            
             const statusCard = document.getElementById('mainStatusCard');
             statusCard.className = 'bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 mb-4 shadow-lg';
             document.getElementById('mainStatus').textContent = 'EMERGENCY';
@@ -1307,6 +1306,9 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
         function resetToNormal() {
             systemStatus = 'normal';
             
+            // Remove Visual Alarm
+            document.body.classList.remove('alarm-state');
+            
             const statusCard = document.getElementById('mainStatusCard');
             statusCard.className = 'bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 mb-4 shadow-lg';
             document.getElementById('mainStatus').textContent = 'NORMAL';
@@ -1329,6 +1331,9 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
             isDarkMode = !isDarkMode;
             document.documentElement.classList.toggle('dark', isDarkMode);
             document.body.classList.toggle('dark', isDarkMode);
+            
+            // SAVE SETTING TO BROWSER MEMORY
+            localStorage.setItem('skySafeTheme', isDarkMode ? 'dark' : 'light');
             
             const nav = document.querySelector('nav');
             if (isDarkMode) {
@@ -1383,6 +1388,28 @@ COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
                 triggerEmergency();
             }
         });
+
+        // Load saved settings immediately
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('skySafeTheme');
+            if (savedTheme === 'dark') {
+                isDarkMode = true;
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                // Update the toggle switch visual
+                const toggleBtn = document.getElementById('darkModeToggle');
+                if(toggleBtn) toggleBtn.checked = true;
+                
+                // Update nav bar colors
+                const nav = document.querySelector('nav');
+                if(nav) {
+                    nav.classList.add('bg-gray-800', 'border-gray-700');
+                    nav.classList.remove('bg-white', 'border-gray-200');
+                }
+            }
+        }
+        // Run this function
+        loadPreferences();
     </script>
 </body>
 </html>
