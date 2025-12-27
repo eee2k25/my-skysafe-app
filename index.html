@@ -1,0 +1,1388 @@
+COPY EVERYTHING BELOW THIS LINE INTO YOUR index.html FILE IN VS CODE:
+================================================================================
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SKYSAFE - Fall Prevention System</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        :root {
+            --primary-yellow: #F59E0B;
+            --primary-yellow-light: #FCD34D;
+            --warning-red: #EF4444;
+            --success-green: #22C55E;
+            --bg-light: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+        }
+        .dark {
+            --bg-light: #111827;
+            --bg-secondary: #1F2937;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+        }
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .screen { display: none; }
+        .screen.active { display: flex; }
+        .nav-item.active { color: #F59E0B; border-top: 2px solid #F59E0B; }
+        .status-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pull-indicator {
+            transition: transform 0.3s ease-out;
+        }
+        .pull-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .refresh-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .pull-progress {
+            transition: all 0.2s ease-out;
+        }
+        .card-bg {
+            background-color: var(--bg-secondary);
+            transition: background-color 0.3s;
+        }
+        .text-primary { color: var(--text-primary); }
+        .text-secondary { color: var(--text-secondary); }
+        .bg-main { background-color: var(--bg-light); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-main min-h-screen">
+    <div id="app" class="max-w-md mx-auto bg-main min-h-screen relative">
+        
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active flex-col min-h-screen justify-center items-center p-6 fade-in">
+            <div class="text-center mb-10">
+                <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-shield-alt text-white text-4xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-primary">SKYSAFE</h1>
+                <p class="text-secondary mt-2">Fall Prevention System</p>
+            </div>
+            
+            <div class="w-full max-w-sm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-secondary mb-2">Username</label>
+                    <input type="text" id="username" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-yellow-400 focus:outline-none bg-white text-gray-800" placeholder="Enter username">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-secondary mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-yellow-400 focus:outline-none bg-white text-gray-800" placeholder="Enter password">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-secondary mb-2">Role</label>
+                    <select id="userRole" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-yellow-400 focus:outline-none bg-white text-gray-800">
+                        <option value="admin">Admin</option>
+                        <option value="engineer">Maintenance Engineer</option>
+                        <option value="viewer">Viewer</option>
+                    </select>
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                    Sign In
+                </button>
+                <p id="loginError" class="text-red-500 text-center mt-4 hidden">Invalid credentials</p>
+            </div>
+            
+            <p class="text-secondary text-sm mt-8">Secure Access Portal v2.1</p>
+        </div>
+
+        <!-- Main App Container -->
+        <div id="mainApp" class="hidden flex-col min-h-screen">
+            
+            <!-- Header -->
+            <header class="bg-gradient-to-r from-yellow-400 to-yellow-500 px-4 py-4 sticky top-0 z-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-white font-bold text-lg">SKYSAFE</h1>
+                            <p class="text-white/80 text-xs" id="headerRole">Admin</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div id="systemStatusBadge" class="px-3 py-1 rounded-full bg-green-500 text-white text-xs font-semibold">
+                            NORMAL
+                        </div>
+                        <button onclick="handleLogout()" class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-sign-out-alt text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Pull to Refresh Indicator -->
+            <div id="pullIndicator" class="text-center py-0 overflow-hidden transition-all duration-300" style="height: 0px;">
+                <div class="py-4 flex flex-col items-center justify-center">
+                    <div id="pullIcon" class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mb-2">
+                        <i id="pullIconInner" class="fas fa-arrow-down text-yellow-500 text-lg"></i>
+                    </div>
+                    <p id="pullText" class="text-yellow-600 font-medium text-sm">Pull down to refresh</p>
+                    <div id="pullProgress" class="w-32 h-1 bg-gray-200 rounded-full mt-2 overflow-hidden">
+                        <div id="pullProgressBar" class="h-full bg-yellow-400 rounded-full transition-all duration-100" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <main id="contentArea" class="flex-1 overflow-y-auto scrollbar-hide pb-20" 
+                  ontouchstart="handleTouchStart(event)" 
+                  ontouchmove="handleTouchMove(event)" 
+                  ontouchend="handleTouchEnd()">
+                
+                <!-- Dashboard Screen -->
+                <div id="dashboardScreen" class="screen active flex-col p-4 fade-in">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-primary mb-1">System Dashboard</h2>
+                            <p class="text-secondary text-sm">Real-time monitoring overview</p>
+                        </div>
+                        <button onclick="manualRefreshDashboard()" id="dashRefreshBtn" class="w-10 h-10 bg-yellow-100 hover:bg-yellow-200 rounded-xl flex items-center justify-center transition-all active:scale-95">
+                            <i id="dashRefreshIcon" class="fas fa-sync-alt text-yellow-600"></i>
+                        </button>
+                    </div>
+
+                    <!-- Main Status Card -->
+                    <div id="mainStatusCard" class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 mb-4 shadow-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-white/80 text-sm">System Status</p>
+                                <h3 id="mainStatus" class="text-white text-2xl font-bold">NORMAL</h3>
+                            </div>
+                            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center status-pulse">
+                                <i id="mainStatusIcon" class="fas fa-check-circle text-white text-3xl"></i>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div class="bg-white/10 rounded-xl p-3">
+                                <p class="text-white/70 text-xs">Building ID</p>
+                                <p class="text-white font-semibold">BLD-2024-A1</p>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-3">
+                                <p class="text-white/70 text-xs">Last Update</p>
+                                <p id="lastUpdate" class="text-white font-semibold">--:--:--</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="card-bg rounded-xl p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-satellite-dish text-yellow-500"></i>
+                                </div>
+                                <div>
+                                    <p class="text-secondary text-xs">Sensors</p>
+                                    <p class="text-primary font-bold text-lg">2/2</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-bg rounded-xl p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-bolt text-green-500"></i>
+                                </div>
+                                <div>
+                                    <p class="text-secondary text-xs">Power</p>
+                                    <p class="text-primary font-bold text-lg">MAIN</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-bg rounded-xl p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-signal text-blue-500"></i>
+                                </div>
+                                <div>
+                                    <p class="text-secondary text-xs">GSM</p>
+                                    <p class="text-primary font-bold text-lg">4/5</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-bg rounded-xl p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-purple-500"></i>
+                                </div>
+                                <div>
+                                    <p class="text-secondary text-xs">Net</p>
+                                    <p id="netStatusQuick" class="text-primary font-bold text-lg">READY</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Events -->
+                    <div class="card-bg rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-semibold text-primary">Recent Activity</h4>
+                            <span class="text-yellow-500 text-sm cursor-pointer" onclick="switchTab('logs')">View All</span>
+                        </div>
+                        <div id="recentEvents" class="space-y-2">
+                            <!-- Events populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensors Screen -->
+                <div id="sensorsScreen" class="screen flex-col p-4 fade-in">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-primary mb-1">Sensor Monitoring</h2>
+                            <p class="text-secondary text-sm">Pull down or tap button to refresh</p>
+                        </div>
+                        <button onclick="manualRefresh()" id="refreshBtn" class="w-10 h-10 bg-yellow-100 hover:bg-yellow-200 rounded-xl flex items-center justify-center transition-all active:scale-95">
+                            <i id="refreshBtnIcon" class="fas fa-sync-alt text-yellow-600"></i>
+                        </button>
+                    </div>
+
+                    <!-- Ultrasonic Sensor Card -->
+                    <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-yellow-400">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-wave-square text-yellow-500 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-primary">Ultrasonic Sensor</h4>
+                                    <p class="text-secondary text-xs">HC-SR04 Module</p>
+                                </div>
+                            </div>
+                            <span id="ultrasonicStatus" class="px-2 py-1 bg-green-100 text-green-600 text-xs font-semibold rounded-full">ACTIVE</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs mb-1">Live Distance</p>
+                                <p id="ultrasonicDistance" class="text-primary text-2xl font-bold">-- cm</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs mb-1">Threshold</p>
+                                <p class="text-primary text-2xl font-bold">150 cm</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-3">
+                            <p class="text-secondary text-xs mb-1"><i class="fas fa-info-circle mr-1"></i>Function</p>
+                            <p class="text-primary text-sm">Measures distance to detect sudden proximity changes indicating potential fall events. Triggers alert when object detected within threshold.</p>
+                        </div>
+                    </div>
+
+                    <!-- Thermal Sensor Card -->
+                    <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-red-400">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-temperature-high text-red-500 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-primary">Thermal Sensor</h4>
+                                    <p class="text-secondary text-xs">MLX90614 IR Module</p>
+                                </div>
+                            </div>
+                            <span id="thermalStatus" class="px-2 py-1 bg-green-100 text-green-600 text-xs font-semibold rounded-full">ACTIVE</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs mb-1">Temperature</p>
+                                <p id="thermalTemp" class="text-primary text-2xl font-bold">-- °C</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs mb-1">Human Detected</p>
+                                <p id="humanPresence" class="text-primary text-2xl font-bold">--</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-3">
+                            <p class="text-secondary text-xs mb-1"><i class="fas fa-info-circle mr-1"></i>Function</p>
+                            <p class="text-primary text-sm">Confirms human presence through body heat detection (36-38°C range). Prevents false triggers from falling objects by verifying thermal signature.</p>
+                        </div>
+                    </div>
+
+                    <!-- Arduino Controller Card -->
+                    <div class="card-bg rounded-2xl p-5 mb-4 border-l-4 border-blue-400">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-microchip text-blue-500 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-primary">Arduino Controller</h4>
+                                    <p class="text-secondary text-xs">ATmega328P MCU</p>
+                                </div>
+                            </div>
+                            <span id="arduinoStatus" class="px-2 py-1 bg-green-100 text-green-600 text-xs font-semibold rounded-full">ONLINE</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3 text-center">
+                                <p class="text-secondary text-xs mb-1">CPU</p>
+                                <p id="cpuUsage" class="text-primary text-lg font-bold">--%</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3 text-center">
+                                <p class="text-secondary text-xs mb-1">Memory</p>
+                                <p id="memUsage" class="text-primary text-lg font-bold">--%</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3 text-center">
+                                <p class="text-secondary text-xs mb-1">Loop</p>
+                                <p id="loopTime" class="text-primary text-lg font-bold">-- ms</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3">
+                            <p class="text-secondary text-xs mb-1"><i class="fas fa-info-circle mr-1"></i>Function</p>
+                            <p class="text-primary text-sm">Central decision logic unit. Processes sensor data, evaluates threat conditions, and coordinates safety net deployment and GSM alerts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Net Screen -->
+                <div id="safetyNetScreen" class="screen flex-col p-4 fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-primary mb-1">Safety Net System</h2>
+                        <p class="text-secondary text-sm">Motor and deployment status</p>
+                    </div>
+
+                    <!-- Net Status Visual -->
+                    <div id="netVisual" class="card-bg rounded-2xl p-6 mb-4 text-center">
+                        <div class="w-32 h-32 mx-auto mb-4 relative">
+                            <div class="absolute inset-0 bg-green-100 rounded-full flex items-center justify-center">
+                                <i id="netIcon" class="fas fa-grip-lines text-green-500 text-5xl"></i>
+                            </div>
+                            <div id="netPulse" class="absolute inset-0 bg-green-400 rounded-full opacity-20 status-pulse"></div>
+                        </div>
+                        <h3 id="netPosition" class="text-primary text-xl font-bold">RETRACTED</h3>
+                        <p class="text-secondary text-sm">Ready for deployment</p>
+                    </div>
+
+                    <!-- Motor Status -->
+                    <div class="card-bg rounded-2xl p-5 mb-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-cog text-purple-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-primary">Motor Status</h4>
+                                <p id="motorCondition" class="text-secondary text-sm">Idle - Standby Mode</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs">Condition</p>
+                                <p id="motorStatus" class="text-primary font-bold">IDLE</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs">Safety Lock</p>
+                                <p id="safetyLock" class="text-green-500 font-bold">ENGAGED</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                            <p class="text-secondary text-xs">Last Activation</p>
+                            <p id="lastActivation" class="text-primary font-semibold">No recent activation</p>
+                        </div>
+                    </div>
+
+                    <!-- Deployment Info -->
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl p-4">
+                        <h4 class="font-semibold text-yellow-700 dark:text-yellow-400 mb-2">
+                            <i class="fas fa-info-circle mr-2"></i>Physical Intervention
+                        </h4>
+                        <p class="text-yellow-600 dark:text-yellow-300 text-sm">
+                            When both ultrasonic and thermal sensors confirm a fall event, the Arduino triggers the motor to rapidly deploy the safety net. The net extends to catch and safely decelerate the falling individual. Auto-retraction occurs after emergency resolution.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- GSM Screen -->
+                <div id="gsmScreen" class="screen flex-col p-4 fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-primary mb-1">GSM & Alerts</h2>
+                        <p class="text-secondary text-sm">Emergency communication status</p>
+                    </div>
+
+                    <!-- Signal Strength -->
+                    <div class="card-bg rounded-2xl p-5 mb-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-signal text-blue-500 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-primary">GSM Module</h4>
+                                    <p class="text-secondary text-xs">SIM800L Module</p>
+                                </div>
+                            </div>
+                            <span id="gsmStatus" class="px-2 py-1 bg-green-100 text-green-600 text-xs font-semibold rounded-full">CONNECTED</span>
+                        </div>
+
+                        <div class="flex items-center gap-2 mb-4">
+                            <div id="signal1" class="w-4 h-6 bg-green-500 rounded"></div>
+                            <div id="signal2" class="w-4 h-8 bg-green-500 rounded"></div>
+                            <div id="signal3" class="w-4 h-10 bg-green-500 rounded"></div>
+                            <div id="signal4" class="w-4 h-12 bg-green-500 rounded"></div>
+                            <div id="signal5" class="w-4 h-14 bg-gray-300 rounded"></div>
+                            <span id="signalStrength" class="ml-3 text-primary font-bold">4/5 Bars</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs">Last Alert Sent</p>
+                                <p id="lastAlertSent" class="text-primary font-semibold text-sm">None</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-secondary text-xs">Delivery Status</p>
+                                <p id="deliveryStatus" class="text-green-500 font-semibold text-sm">Ready</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="card-bg rounded-2xl p-5 mb-4">
+                        <h4 class="font-semibold text-primary mb-4">Emergency Contacts</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-700 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-ambulance text-red-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-primary font-semibold">Emergency Services</p>
+                                        <p class="text-secondary text-sm">+91-112</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-700 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-building text-blue-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-primary font-semibold">Building Security</p>
+                                        <p class="text-secondary text-sm">+91-9876543210</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-700 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user-shield text-yellow-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-primary font-semibold">Maintenance Team</p>
+                                        <p class="text-secondary text-sm">+91-9876543211</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GSM Info -->
+                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4">
+                        <h4 class="font-semibold text-blue-700 dark:text-blue-400 mb-2">
+                            <i class="fas fa-info-circle mr-2"></i>Offline Communication
+                        </h4>
+                        <p class="text-blue-600 dark:text-blue-300 text-sm">
+                            The GSM module operates independently of WiFi/Internet. Emergency SMS alerts are sent directly via cellular network, ensuring communication even during network outages.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Power Screen -->
+                <div id="powerScreen" class="screen flex-col p-4 fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-primary mb-1">Power & Health</h2>
+                        <p class="text-secondary text-sm">System diagnostics</p>
+                    </div>
+
+                    <!-- Power Status -->
+                    <div class="card-bg rounded-2xl p-5 mb-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-plug text-green-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-primary">Power Source</h4>
+                                <p id="powerSource" class="text-green-500 font-bold">MAIN POWER</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-4">
+                                <p class="text-secondary text-xs mb-2">Main Voltage</p>
+                                <div class="flex items-end gap-1">
+                                    <span id="mainVoltage" class="text-primary text-2xl font-bold">12.0</span>
+                                    <span class="text-secondary">V</span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-200 rounded-full mt-2">
+                                    <div id="mainVoltageBar" class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-4">
+                                <p class="text-secondary text-xs mb-2">Backup Battery</p>
+                                <div class="flex items-end gap-1">
+                                    <span id="backupVoltage" class="text-primary text-2xl font-bold">11.8</span>
+                                    <span class="text-secondary">V</span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-200 rounded-full mt-2">
+                                    <div id="backupVoltageBar" class="h-full bg-yellow-500 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                            <i class="fas fa-battery-full text-green-500"></i>
+                            <span class="text-green-600 dark:text-green-400 text-sm font-medium">Backup ready - 4+ hours runtime</span>
+                        </div>
+                    </div>
+
+                    <!-- System Uptime -->
+                    <div class="card-bg rounded-2xl p-5 mb-4">
+                        <h4 class="font-semibold text-primary mb-4">System Uptime</h4>
+                        <div class="grid grid-cols-4 gap-2 text-center">
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p id="uptimeDays" class="text-primary text-2xl font-bold">00</p>
+                                <p class="text-secondary text-xs">Days</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p id="uptimeHours" class="text-primary text-2xl font-bold">00</p>
+                                <p class="text-secondary text-xs">Hours</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p id="uptimeMins" class="text-primary text-2xl font-bold">00</p>
+                                <p class="text-secondary text-xs">Mins</p>
+                            </div>
+                            <div class="bg-white/50 dark:bg-gray-700 rounded-xl p-3">
+                                <p id="uptimeSecs" class="text-primary text-2xl font-bold">00</p>
+                                <p class="text-secondary text-xs">Secs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Flags -->
+                    <div class="card-bg rounded-2xl p-5">
+                        <h4 class="font-semibold text-primary mb-4">System Diagnostics</h4>
+                        <div id="errorFlags" class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                                <span class="text-primary text-sm">Sensor Array</span>
+                                <span class="text-green-500 font-semibold text-sm">OK</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                                <span class="text-primary text-sm">Motor Controller</span>
+                                <span class="text-green-500 font-semibold text-sm">OK</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                                <span class="text-primary text-sm">GSM Module</span>
+                                <span class="text-green-500 font-semibold text-sm">OK</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                                <span class="text-primary text-sm">Power System</span>
+                                <span class="text-green-500 font-semibold text-sm">OK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Screen -->
+                <div id="logsScreen" class="screen flex-col p-4 fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-primary mb-1">Event History</h2>
+                        <p class="text-secondary text-sm">Chronological system logs</p>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="flex gap-2 mb-4 overflow-x-auto scrollbar-hide">
+                        <button onclick="filterLogs('all')" class="log-filter active px-4 py-2 bg-yellow-400 text-white rounded-full text-sm font-medium whitespace-nowrap">All Events</button>
+                        <button onclick="filterLogs('detection')" class="log-filter px-4 py-2 bg-gray-200 text-gray-600 rounded-full text-sm font-medium whitespace-nowrap">Detection</button>
+                        <button onclick="filterLogs('alert')" class="log-filter px-4 py-2 bg-gray-200 text-gray-600 rounded-full text-sm font-medium whitespace-nowrap">Alerts</button>
+                        <button onclick="filterLogs('maintenance')" class="log-filter px-4 py-2 bg-gray-200 text-gray-600 rounded-full text-sm font-medium whitespace-nowrap">Maintenance</button>
+                    </div>
+
+                    <!-- Log Entries -->
+                    <div id="logEntries" class="space-y-3">
+                        <!-- Logs populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Settings Screen -->
+                <div id="settingsScreen" class="screen flex-col p-4 fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-primary mb-1">Settings</h2>
+                        <p class="text-secondary text-sm">System configuration</p>
+                    </div>
+
+                    <!-- UI Preferences -->
+                    <div class="card-bg rounded-2xl p-5 mb-4">
+                        <h4 class="font-semibold text-primary mb-4">UI Preferences</h4>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-moon text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-primary font-medium">Dark Mode</p>
+                                        <p class="text-secondary text-xs">Switch to dark theme</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="darkModeToggle" class="sr-only peer" onchange="toggleDarkMode()">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-palette text-yellow-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-primary font-medium">Theme Color</p>
+                                        <p class="text-secondary text-xs">Yellow & White (Default)</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-check-circle text-yellow-400 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Thresholds (View Only) -->
+                    <div class="card-bg rounded-2xl p-5 mb-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-semibold text-primary">System Thresholds</h4>
+                            <span class="text-xs text-gray-400"><i class="fas fa-lock mr-1"></i>Read Only</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between p-3 bg-white/50 dark:bg-gray-700 rounded-xl">
+                                <span class="text-secondary text-sm">Ultrasonic Threshold</span>
+                                <span class="text-primary font-semibold">150 cm</span>
+                            </div>
+                            <div class="flex justify-between p-3 bg-white/50 dark:bg-gray-700 rounded-xl">
+                                <span class="text-secondary text-sm">Thermal Min Temp</span>
+                                <span class="text-primary font-semibold">36.0 °C</span>
+                            </div>
+                            <div class="flex justify-between p-3 bg-white/50 dark:bg-gray-700 rounded-xl">
+                                <span class="text-secondary text-sm">Thermal Max Temp</span>
+                                <span class="text-primary font-semibold">38.5 °C</span>
+                            </div>
+                            <div class="flex justify-between p-3 bg-white/50 dark:bg-gray-700 rounded-xl">
+                                <span class="text-secondary text-sm">Alert Delay</span>
+                                <span class="text-primary font-semibold">500 ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Maintenance Mode (Admin Only) -->
+                    <div id="maintenanceModeSection" class="card-bg rounded-2xl p-5 mb-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-tools text-orange-500"></i>
+                                </div>
+                                <div>
+                                    <p class="text-primary font-medium">Maintenance Mode</p>
+                                    <p class="text-secondary text-xs">Admin access only</p>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="maintenanceToggle" class="sr-only peer" onchange="toggleMaintenance()">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-400"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- App Info -->
+                    <div class="card-bg rounded-2xl p-5">
+                        <h4 class="font-semibold text-primary mb-4">About SKYSAFE</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-secondary">Version</span>
+                                <span class="text-primary">2.1.0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-secondary">Build</span>
+                                <span class="text-primary">2024.01.15</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-secondary">Developer</span>
+                                <span class="text-primary">MEKG Team</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 max-w-md mx-auto">
+                <div class="flex justify-around py-2">
+                    <button onclick="switchTab('dashboard')" class="nav-item active flex flex-col items-center py-2 px-3 text-gray-500">
+                        <i class="fas fa-home text-lg mb-1"></i>
+                        <span class="text-xs">Home</span>
+                    </button>
+                    <button onclick="switchTab('sensors')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-500">
+                        <i class="fas fa-satellite-dish text-lg mb-1"></i>
+                        <span class="text-xs">Sensors</span>
+                    </button>
+                    <button onclick="switchTab('safetyNet')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-500">
+                        <i class="fas fa-shield-alt text-lg mb-1"></i>
+                        <span class="text-xs">Net</span>
+                    </button>
+                    <button onclick="switchTab('gsm')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-500">
+                        <i class="fas fa-signal text-lg mb-1"></i>
+                        <span class="text-xs">GSM</span>
+                    </button>
+                    <button onclick="switchTab('power')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-500">
+                        <i class="fas fa-bolt text-lg mb-1"></i>
+                        <span class="text-xs">Power</span>
+                    </button>
+                    <button onclick="switchTab('logs')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-500">
+                        <i class="fas fa-history text-lg mb-1"></i>
+                        <span class="text-xs">Logs</span>
+                    </button>
+                    <button onclick="switchTab('settings')" class="nav-item flex flex-col items-center py-2 px-3 text-gray-500">
+                        <i class="fas fa-cog text-lg mb-1"></i>
+                        <span class="text-xs">Settings</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Emergency Alert Modal -->
+        <div id="emergencyModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full animate-pulse">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-red-500 mb-2">EMERGENCY ALERT</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Fall detection triggered. Safety net deploying. Emergency services notified.</p>
+                    <button onclick="acknowledgeEmergency()" class="w-full bg-red-500 text-white font-semibold py-3 rounded-xl">
+                        Acknowledge
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // =============================================
+        // SKYSAFE Application JavaScript
+        // Comprehensive monitoring and control interface
+        // =============================================
+
+        // ===================
+        // Global State
+        // ===================
+        let currentUser = null;
+        let currentRole = 'viewer';
+        let isDarkMode = false;
+        let isMaintenanceMode = false;
+        let systemStatus = 'normal';
+        let uptimeSeconds = 0;
+        let touchStartY = 0;
+        let isPulling = false;
+
+        // ===================
+        // Mock Data Store
+        // ===================
+        const mockSensorData = {
+            ultrasonic: {
+                distance: 245,
+                threshold: 150,
+                status: 'active',
+                lastUpdate: new Date()
+            },
+            thermal: {
+                temperature: 25.5,
+                humanPresence: false,
+                status: 'active',
+                lastUpdate: new Date()
+            },
+            arduino: {
+                cpuUsage: 23,
+                memoryUsage: 45,
+                loopTime: 12,
+                status: 'online'
+            }
+        };
+
+        const mockSystemData = {
+            motor: {
+                status: 'idle',
+                netPosition: 'retracted',
+                safetyLock: 'engaged',
+                lastActivation: null
+            },
+            gsm: {
+                signalStrength: 4,
+                status: 'connected',
+                lastAlert: null,
+                deliveryStatus: 'ready'
+            },
+            power: {
+                source: 'main',
+                mainVoltage: 12.0,
+                backupVoltage: 11.8
+            }
+        };
+
+        let eventLogs = [
+            { id: 1, type: 'maintenance', title: 'System Boot', description: 'SKYSAFE system initialized successfully', time: new Date(Date.now() - 3600000), sensors: ['Arduino'], action: 'System startup completed' },
+            { id: 2, type: 'detection', title: 'Sensor Calibration', description: 'Ultrasonic sensor calibrated', time: new Date(Date.now() - 2400000), sensors: ['Ultrasonic'], action: 'Auto-calibration' },
+            { id: 3, type: 'maintenance', title: 'GSM Module Check', description: 'Network connectivity verified', time: new Date(Date.now() - 1800000), sensors: ['GSM'], action: 'Signal test passed' },
+            { id: 4, type: 'detection', title: 'Movement Detected', description: 'Object detected at 180cm', time: new Date(Date.now() - 1200000), sensors: ['Ultrasonic'], action: 'Monitoring continued' },
+            { id: 5, type: 'maintenance', title: 'Battery Check', description: 'Backup battery status verified', time: new Date(Date.now() - 600000), sensors: ['Power'], action: 'Battery healthy' }
+        ];
+
+        // ===================
+        // Authentication
+        // ===================
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('userRole').value;
+
+            if (username === 'MEKG' && password === '@MEKS1') {
+                currentUser = username;
+                currentRole = role;
+                
+                document.getElementById('loginScreen').classList.remove('active');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('flex');
+                
+                document.getElementById('headerRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+                
+                if (role !== 'admin') {
+                    document.getElementById('maintenanceModeSection').style.display = 'none';
+                }
+                
+                initializeApp();
+                
+                addEventLog('maintenance', 'User Login', `${username} logged in as ${role}`, ['System'], 'Access granted');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('loginError').classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('flex');
+            document.getElementById('loginScreen').classList.add('active');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // ===================
+        // Navigation
+        // ===================
+        function switchTab(tabName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            const screenId = tabName + 'Screen';
+            const screen = document.getElementById(screenId);
+            if (screen) {
+                screen.classList.add('active');
+            }
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // ===================
+        // Pull to Refresh
+        // ===================
+        let pullDistance = 0;
+        const PULL_THRESHOLD = 80;
+        let isRefreshing = false;
+
+        function handleTouchStart(e) {
+            const contentArea = document.getElementById('contentArea');
+            if (contentArea.scrollTop <= 0 && !isRefreshing) {
+                touchStartY = e.touches[0].clientY;
+                isPulling = true;
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (!isPulling || isRefreshing) return;
+            
+            const contentArea = document.getElementById('contentArea');
+            if (contentArea.scrollTop > 0) {
+                isPulling = false;
+                return;
+            }
+            
+            const touchY = e.touches[0].clientY;
+            pullDistance = Math.max(0, touchY - touchStartY);
+            
+            const pullIndicator = document.getElementById('pullIndicator');
+            const pullProgressBar = document.getElementById('pullProgressBar');
+            const pullText = document.getElementById('pullText');
+            const pullIconInner = document.getElementById('pullIconInner');
+            
+            if (pullDistance > 10) {
+                const height = Math.min(pullDistance * 0.8, 100);
+                pullIndicator.style.height = height + 'px';
+                
+                const progress = Math.min((pullDistance / PULL_THRESHOLD) * 100, 100);
+                pullProgressBar.style.width = progress + '%';
+                
+                if (pullDistance >= PULL_THRESHOLD) {
+                    pullText.textContent = 'Release to refresh';
+                    pullIconInner.className = 'fas fa-sync-alt text-yellow-500 text-lg';
+                    pullIconInner.style.transform = 'rotate(' + (pullDistance * 2) + 'deg)';
+                } else {
+                    pullText.textContent = 'Pull down to refresh';
+                    pullIconInner.className = 'fas fa-arrow-down text-yellow-500 text-lg';
+                    pullIconInner.style.transform = 'translateY(' + Math.min(pullDistance * 0.1, 5) + 'px)';
+                }
+                
+                if (pullDistance > 20) {
+                    e.preventDefault();
+                }
+            }
+        }
+
+        function handleTouchEnd() {
+            if (!isPulling || isRefreshing) return;
+            
+            const pullIndicator = document.getElementById('pullIndicator');
+            const pullProgressBar = document.getElementById('pullProgressBar');
+            const pullText = document.getElementById('pullText');
+            const pullIconInner = document.getElementById('pullIconInner');
+            
+            if (pullDistance >= PULL_THRESHOLD) {
+                isRefreshing = true;
+                pullText.textContent = 'Refreshing...';
+                pullIconInner.className = 'fas fa-sync-alt text-yellow-500 text-lg refresh-spinner';
+                pullIconInner.style.transform = '';
+                pullIndicator.style.height = '80px';
+                pullProgressBar.style.width = '100%';
+                
+                setTimeout(() => {
+                    refreshSensors();
+                    
+                    pullText.textContent = 'Updated!';
+                    pullIconInner.className = 'fas fa-check text-green-500 text-lg';
+                    
+                    setTimeout(() => {
+                        pullIndicator.style.height = '0px';
+                        pullProgressBar.style.width = '0%';
+                        isRefreshing = false;
+                        
+                        setTimeout(() => {
+                            pullIconInner.className = 'fas fa-arrow-down text-yellow-500 text-lg';
+                            pullText.textContent = 'Pull down to refresh';
+                        }, 300);
+                    }, 800);
+                }, 1000);
+            } else {
+                pullIndicator.style.height = '0px';
+                pullProgressBar.style.width = '0%';
+                pullIconInner.style.transform = '';
+            }
+            
+            isPulling = false;
+            pullDistance = 0;
+        }
+
+        function refreshSensors() {
+            mockSensorData.ultrasonic.distance = Math.floor(Math.random() * 200) + 100;
+            mockSensorData.thermal.temperature = (Math.random() * 15 + 20).toFixed(1);
+            mockSensorData.thermal.humanPresence = Math.random() > 0.7;
+            mockSensorData.arduino.cpuUsage = Math.floor(Math.random() * 40) + 10;
+            mockSensorData.arduino.memoryUsage = Math.floor(Math.random() * 30) + 30;
+            mockSensorData.arduino.loopTime = Math.floor(Math.random() * 10) + 8;
+            
+            mockSystemData.gsm.signalStrength = Math.floor(Math.random() * 3) + 3;
+            updateGSMSignal();
+            
+            mockSystemData.power.mainVoltage = (11.8 + Math.random() * 0.4).toFixed(1);
+            mockSystemData.power.backupVoltage = (11.5 + Math.random() * 0.5).toFixed(1);
+            document.getElementById('mainVoltage').textContent = mockSystemData.power.mainVoltage;
+            document.getElementById('backupVoltage').textContent = mockSystemData.power.backupVoltage;
+            
+            updateSensorDisplay();
+            
+            addEventLog('maintenance', 'Sensor Refresh', 'Manual sensor data refresh triggered', ['All Sensors'], 'Data updated');
+        }
+        
+        function updateGSMSignal() {
+            const strength = mockSystemData.gsm.signalStrength;
+            for (let i = 1; i <= 5; i++) {
+                const bar = document.getElementById('signal' + i);
+                if (i <= strength) {
+                    bar.className = 'w-4 rounded bg-green-500';
+                    bar.style.height = (4 + i * 2) + 'px';
+                } else {
+                    bar.className = 'w-4 rounded bg-gray-300';
+                    bar.style.height = (4 + i * 2) + 'px';
+                }
+            }
+            document.getElementById('signalStrength').textContent = strength + '/5 Bars';
+        }
+        
+        function manualRefresh() {
+            const btn = document.getElementById('refreshBtn');
+            const icon = document.getElementById('refreshBtnIcon');
+            
+            if (!btn || btn.disabled) return;
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            icon.classList.add('refresh-spinner');
+            
+            setTimeout(() => {
+                refreshSensors();
+                
+                icon.classList.remove('refresh-spinner');
+                icon.className = 'fas fa-check text-green-500';
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    icon.className = 'fas fa-sync-alt text-yellow-600';
+                }, 800);
+            }, 1000);
+        }
+        
+        function manualRefreshDashboard() {
+            const btn = document.getElementById('dashRefreshBtn');
+            const icon = document.getElementById('dashRefreshIcon');
+            
+            if (!btn || btn.disabled) return;
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            icon.classList.add('refresh-spinner');
+            
+            setTimeout(() => {
+                refreshSensors();
+                renderRecentEvents();
+                
+                icon.classList.remove('refresh-spinner');
+                icon.className = 'fas fa-check text-green-500';
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    icon.className = 'fas fa-sync-alt text-yellow-600';
+                }, 800);
+            }, 1000);
+        }
+
+        // ===================
+        // Data Updates
+        // ===================
+        function updateSensorDisplay() {
+            document.getElementById('ultrasonicDistance').textContent = mockSensorData.ultrasonic.distance + ' cm';
+            
+            document.getElementById('thermalTemp').textContent = mockSensorData.thermal.temperature + ' °C';
+            document.getElementById('humanPresence').textContent = mockSensorData.thermal.humanPresence ? 'YES' : 'NO';
+            document.getElementById('humanPresence').className = mockSensorData.thermal.humanPresence 
+                ? 'text-green-500 text-2xl font-bold' 
+                : 'text-primary text-2xl font-bold';
+            
+            document.getElementById('cpuUsage').textContent = mockSensorData.arduino.cpuUsage + '%';
+            document.getElementById('memUsage').textContent = mockSensorData.arduino.memoryUsage + '%';
+            document.getElementById('loopTime').textContent = mockSensorData.arduino.loopTime + ' ms';
+            
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+
+        function updateUptime() {
+            uptimeSeconds++;
+            const days = Math.floor(uptimeSeconds / 86400);
+            const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+            const mins = Math.floor((uptimeSeconds % 3600) / 60);
+            const secs = uptimeSeconds % 60;
+            
+            document.getElementById('uptimeDays').textContent = days.toString().padStart(2, '0');
+            document.getElementById('uptimeHours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('uptimeMins').textContent = mins.toString().padStart(2, '0');
+            document.getElementById('uptimeSecs').textContent = secs.toString().padStart(2, '0');
+        }
+
+        function simulateDataChanges() {
+            mockSensorData.ultrasonic.distance += Math.floor(Math.random() * 10) - 5;
+            mockSensorData.ultrasonic.distance = Math.max(50, Math.min(400, mockSensorData.ultrasonic.distance));
+            
+            mockSensorData.thermal.temperature = (parseFloat(mockSensorData.thermal.temperature) + (Math.random() * 0.4 - 0.2)).toFixed(1);
+            
+            if (Math.random() > 0.95) {
+                mockSensorData.thermal.humanPresence = !mockSensorData.thermal.humanPresence;
+            }
+            
+            mockSystemData.power.mainVoltage = (11.8 + Math.random() * 0.4).toFixed(1);
+            mockSystemData.power.backupVoltage = (11.5 + Math.random() * 0.5).toFixed(1);
+            
+            document.getElementById('mainVoltage').textContent = mockSystemData.power.mainVoltage;
+            document.getElementById('backupVoltage').textContent = mockSystemData.power.backupVoltage;
+            
+            updateSensorDisplay();
+            
+            if (Math.random() > 0.998 && systemStatus === 'normal') {
+                triggerEmergency();
+            }
+        }
+
+        // ===================
+        // Event Logs
+        // ===================
+        function addEventLog(type, title, description, sensors, action) {
+            const newLog = {
+                id: eventLogs.length + 1,
+                type: type,
+                title: title,
+                description: description,
+                time: new Date(),
+                sensors: sensors,
+                action: action
+            };
+            eventLogs.unshift(newLog);
+            renderLogs();
+            renderRecentEvents();
+        }
+
+        function renderLogs(filter = 'all') {
+            const container = document.getElementById('logEntries');
+            const filteredLogs = filter === 'all' 
+                ? eventLogs 
+                : eventLogs.filter(log => log.type === filter);
+            
+            container.innerHTML = filteredLogs.map(log => `
+                <div class="card-bg rounded-xl p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center ${getLogTypeColor(log.type)}">
+                            <i class="${getLogTypeIcon(log.type)} text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-primary">${log.title}</h4>
+                                <span class="text-xs text-secondary">${formatTime(log.time)}</span>
+                            </div>
+                            <p class="text-secondary text-sm mt-1">${log.description}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                ${log.sensors.map(s => `<span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">${s}</span>`).join('')}
+                            </div>
+                            <p class="text-xs text-secondary mt-2"><i class="fas fa-check-circle mr-1"></i>${log.action}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderRecentEvents() {
+            const container = document.getElementById('recentEvents');
+            const recentLogs = eventLogs.slice(0, 3);
+            
+            container.innerHTML = recentLogs.map(log => `
+                <div class="flex items-center gap-3 p-2 bg-white/50 dark:bg-gray-700 rounded-lg">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center ${getLogTypeColor(log.type)}">
+                        <i class="${getLogTypeIcon(log.type)} text-white text-xs"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-primary text-sm font-medium">${log.title}</p>
+                        <p class="text-secondary text-xs">${formatTime(log.time)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterLogs(filter) {
+            document.querySelectorAll('.log-filter').forEach(btn => {
+                btn.classList.remove('bg-yellow-400', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-600');
+            });
+            event.currentTarget.classList.remove('bg-gray-200', 'text-gray-600');
+            event.currentTarget.classList.add('bg-yellow-400', 'text-white');
+            renderLogs(filter);
+        }
+
+        function getLogTypeColor(type) {
+            switch(type) {
+                case 'detection': return 'bg-blue-500';
+                case 'alert': return 'bg-red-500';
+                case 'maintenance': return 'bg-yellow-500';
+                default: return 'bg-gray-500';
+            }
+        }
+
+        function getLogTypeIcon(type) {
+            switch(type) {
+                case 'detection': return 'fas fa-eye';
+                case 'alert': return 'fas fa-exclamation-triangle';
+                case 'maintenance': return 'fas fa-tools';
+                default: return 'fas fa-info';
+            }
+        }
+
+        function formatTime(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + ' hr ago';
+            return date.toLocaleDateString();
+        }
+
+        // ===================
+        // Emergency Handling
+        // ===================
+        function triggerEmergency() {
+            systemStatus = 'emergency';
+            
+            const statusCard = document.getElementById('mainStatusCard');
+            statusCard.className = 'bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 mb-4 shadow-lg';
+            document.getElementById('mainStatus').textContent = 'EMERGENCY';
+            document.getElementById('mainStatusIcon').className = 'fas fa-exclamation-triangle text-white text-3xl';
+            document.getElementById('systemStatusBadge').className = 'px-3 py-1 rounded-full bg-red-500 text-white text-xs font-semibold';
+            document.getElementById('systemStatusBadge').textContent = 'EMERGENCY';
+            
+            document.getElementById('netPosition').textContent = 'DEPLOYED';
+            document.getElementById('motorStatus').textContent = 'RUNNING';
+            document.getElementById('safetyLock').textContent = 'RELEASED';
+            document.getElementById('safetyLock').className = 'text-red-500 font-bold';
+            
+            document.getElementById('emergencyModal').classList.remove('hidden');
+            
+            addEventLog('alert', 'EMERGENCY TRIGGERED', 'Fall detection confirmed. Safety net deployed.', ['Ultrasonic', 'Thermal', 'Motor'], 'Emergency protocol activated');
+        }
+
+        function acknowledgeEmergency() {
+            document.getElementById('emergencyModal').classList.add('hidden');
+            
+            setTimeout(() => {
+                resetToNormal();
+            }, 5000);
+        }
+
+        function resetToNormal() {
+            systemStatus = 'normal';
+            
+            const statusCard = document.getElementById('mainStatusCard');
+            statusCard.className = 'bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 mb-4 shadow-lg';
+            document.getElementById('mainStatus').textContent = 'NORMAL';
+            document.getElementById('mainStatusIcon').className = 'fas fa-check-circle text-white text-3xl';
+            document.getElementById('systemStatusBadge').className = 'px-3 py-1 rounded-full bg-green-500 text-white text-xs font-semibold';
+            document.getElementById('systemStatusBadge').textContent = 'NORMAL';
+            
+            document.getElementById('netPosition').textContent = 'RETRACTED';
+            document.getElementById('motorStatus').textContent = 'IDLE';
+            document.getElementById('safetyLock').textContent = 'ENGAGED';
+            document.getElementById('safetyLock').className = 'text-green-500 font-bold';
+            
+            addEventLog('maintenance', 'System Reset', 'Emergency resolved. System returned to normal.', ['All'], 'Normal operation resumed');
+        }
+
+        // ===================
+        // Settings
+        // ===================
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+            document.body.classList.toggle('dark', isDarkMode);
+            
+            const nav = document.querySelector('nav');
+            if (isDarkMode) {
+                nav.classList.add('bg-gray-800', 'border-gray-700');
+                nav.classList.remove('bg-white', 'border-gray-200');
+            } else {
+                nav.classList.remove('bg-gray-800', 'border-gray-700');
+                nav.classList.add('bg-white', 'border-gray-200');
+            }
+        }
+
+        function toggleMaintenance() {
+            isMaintenanceMode = !isMaintenanceMode;
+            
+            if (isMaintenanceMode) {
+                systemStatus = 'standby';
+                const statusCard = document.getElementById('mainStatusCard');
+                statusCard.className = 'bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-6 mb-4 shadow-lg';
+                document.getElementById('mainStatus').textContent = 'STANDBY';
+                document.getElementById('mainStatusIcon').className = 'fas fa-tools text-white text-3xl';
+                document.getElementById('systemStatusBadge').className = 'px-3 py-1 rounded-full bg-yellow-500 text-white text-xs font-semibold';
+                document.getElementById('systemStatusBadge').textContent = 'STANDBY';
+                
+                addEventLog('maintenance', 'Maintenance Mode', 'System entered maintenance mode', ['System'], 'Detection paused');
+            } else {
+                resetToNormal();
+            }
+        }
+
+        // ===================
+        // Initialization
+        // ===================
+        function initializeApp() {
+            updateSensorDisplay();
+            renderLogs();
+            renderRecentEvents();
+            
+            setInterval(updateUptime, 1000);
+            setInterval(simulateDataChanges, 2000);
+            
+            uptimeSeconds = Math.floor(Math.random() * 86400) + 3600;
+        }
+
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'e' && e.ctrlKey) {
+                triggerEmergency();
+            }
+        });
+    </script>
+</body>
+</html>
