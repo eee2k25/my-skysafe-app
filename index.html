@@ -3,481 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKYSAFE: Advanced Prevention System</title>
+    <title>System Dashboard</title>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-safe: #10b981;
-            --accent-warn: #f59e0b;
-            --accent-danger: #ef4444;
-            --border-radius: 12px;
-            --font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
+        /* YOUR CSS PASED HERE */
         body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #0b0f14;
+            color: #e0e0e0;
         }
 
-        /* --- Emergency Banner --- */
-        #emergency-banner {
-            width: 100%;
-            padding: 15px;
+        header {
+            padding: 20px;
+            background: #111820;
             text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            background-color: var(--card-bg);
-            border-bottom: 2px solid #334155;
-            transition: all 0.3s ease;
-            z-index: 100;
+            border-bottom: 2px solid #1f2a36;
         }
 
-        .banner-safe { background-color: var(--accent-safe); color: #fff; }
-        .banner-monitoring { background-color: var(--card-bg); color: var(--text-muted); }
-        .banner-critical { 
-            background-color: var(--accent-danger); 
-            color: white; 
-            animation: pulse-banner 1s infinite alternate;
+        header h1 {
+            margin: 0;
+            color: #4cc9f0;
         }
 
-        /* --- Layout --- */
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 3fr 1fr; /* 3 parts dashboard, 1 part logs */
-            gap: 20px;
-            padding: 20px;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .main-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            overflow-y: auto;
-        }
-
-        /* --- Header Section --- */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header h1 { font-size: 1.5rem; letter-spacing: 1px; }
-        .status-badge {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        /* --- Grid for Cards --- */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-        }
-
-        /* --- Card Styling --- */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            border: 1px solid #334155;
-            position: relative;
-            transition: transform 0.2s;
-        }
-        
-        /* Visual Hierarchy: Critical Cards */
-        .card.critical-component {
-            border: 2px solid #475569;
-            background: linear-gradient(145deg, #1e293b, #253045);
-        }
-        .card.critical-component h3 {
-            color: var(--accent-warn);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .card h3 { font-size: 1.1rem; color: var(--text-main); }
-        
-        .card-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin: 10px 0;
-            color: var(--accent-safe);
-        }
-
-        .confidence-score {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        /* Tooltip / Info Icon */
-        .info-icon {
-            cursor: help;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            border: 1px solid #475569;
-            border-radius: 50%;
-            width: 20px; 
-            height: 20px;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-        }
-        
-        /* Using native title tooltip, but stylized via CSS roughly for demo */
-        .info-icon:hover { color: #fff; border-color: #fff; }
-
-        /* --- Side Panel (Logs & Controls) --- */
-        .side-panel {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            border: 1px solid #334155;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            padding: 15px;
-            background-color: #0f172a;
-            border-bottom: 1px solid #334155;
-            font-weight: bold;
-        }
-
-        .log-container {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-        }
-
-        .log-entry {
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #334155;
-            color: var(--text-muted);
-        }
-        .log-entry span { color: var(--text-main); font-weight: bold; }
-        .log-time { color: #64748b; font-size: 0.75rem; display: block; }
-
-        /* Controls */
-        .controls-area {
-            padding: 15px;
-            border-top: 1px solid #334155;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
+        .state-idle {
+            display: inline-block;
             margin-top: 10px;
-            transition: all 0.2s;
+            padding: 6px 12px;
+            background: #2a2a2a;
+            border-radius: 4px;
+            font-size: 0.9em;
         }
-        .btn-simulate { background-color: #3b82f6; color: white; }
-        .btn-simulate:hover { background-color: #2563eb; }
-        .btn-reset { background-color: #475569; color: white; }
-        .btn-reset:hover { background-color: #334155; }
 
-        /* --- Animations --- */
-        @keyframes pulse-banner {
-            from { background-color: #ef4444; }
-            to { background-color: #b91c1c; }
+        #alertBanner {
+            background: #b00020;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-weight: bold;
         }
-        @keyframes flash-border {
-            0% { border-color: #ef4444; box-shadow: 0 0 10px #ef4444; }
-            50% { border-color: transparent; box-shadow: none; }
-            100% { border-color: #ef4444; box-shadow: 0 0 10px #ef4444; }
-        }
-        .active-alarm { animation: flash-border 0.8s infinite; }
 
+        .hidden {
+            display: none;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .card {
+            background: #151e27;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 4px solid #2e3b4e;
+        }
+
+        .card.critical {
+            border-left: 4px solid #ff9800; /* Overrides standard border */
+        }
+
+        .sensor {
+            margin-bottom: 12px;
+        }
+
+        .log ul {
+            list-style: none;
+            padding-left: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log li {
+            font-size: 0.9em;
+            border-bottom: 1px solid #263241;
+            padding: 6px 0;
+            color: #ccc;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #111820;
+            font-size: 0.85em;
+            color: #aaa;
+        }
     </style>
 </head>
 <body>
 
-    <div id="emergency-banner" class="banner-monitoring">
-        SYSTEM STATUS: MONITORING
+    <header>
+        <h1>SKYSAFE Monitor</h1>
+        <span class="state-idle">System Status: Active Monitoring</span>
+    </header>
+
+    <div id="alertBanner" class="hidden">
+        ⚠️ ALERT: FALL DETECTED
     </div>
 
-    <div class="dashboard-container">
-        
-        <div class="main-panel">
-            <div class="header">
-                <div>
-                    <h1>SKYSAFE DASHBOARD</h1>
-                    <p style="color: var(--text-muted);">Suicide Prevention & Fall Detection System</p>
-                </div>
-                <div class="status-badge" id="system-state-badge" style="background: #334155; color: #fff;">
-                    IDLE
-                </div>
+    <main>
+        <div class="card">
+            <h3>Ultrasonic Sensor</h3>
+            <div class="sensor">
+                <strong>Distance:</strong> <span>120 cm</span>
             </div>
-
-            <h2 style="font-size: 1rem; color: var(--text-muted); margin-top: 10px;">SENSOR INPUTS</h2>
-            <div class="cards-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Ultrasonic Sensor</h3>
-                        <div class="info-icon" title="Measures distance to detect objects crossing the safety railing. Threshold: <50cm.">ℹ</div>
-                    </div>
-                    <div class="card-value" id="ultra-val">120 cm</div>
-                    <div class="confidence-score">Confidence: <span id="ultra-conf">98%</span></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Thermal Camera</h3>
-                        <div class="info-icon" title="Detects heat signatures to differentiate humans from inanimate objects.">ℹ</div>
-                    </div>
-                    <div class="card-value" id="therm-val">Normal</div>
-                    <div class="confidence-score">Confidence: <span id="therm-conf">92%</span></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3>PIR Motion</h3>
-                        <div class="info-icon" title="Passive Infrared sensor to confirm movement in restricted zones.">ℹ</div>
-                    </div>
-                    <div class="card-value" id="pir-val">No Motion</div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 1rem; color: var(--text-muted); margin-top: 10px;">CRITICAL RESPONSE</h2>
-            <div class="cards-grid">
-                <div class="card critical-component" id="card-net">
-                    <div class="card-header">
-                        <h3>🛡 Net Deployment</h3>
-                        <div class="info-icon" title="Solenoid-driven safety net. Activates only when Fall Confirmed.">ℹ</div>
-                    </div>
-                    <div class="card-value" id="net-status" style="color: var(--text-muted);">LOCKED</div>
-                </div>
-
-                <div class="card critical-component" id="card-gsm">
-                    <div class="card-header">
-                        <h3>📡 GSM Alert</h3>
-                        <div class="info-icon" title="Sends SMS with GPS coordinates to emergency services/parents.">ℹ</div>
-                    </div>
-                    <div class="card-value" id="gsm-status" style="color: var(--text-muted);">STANDBY</div>
-                </div>
-
-                <div class="card" id="card-alarm">
-                    <div class="card-header">
-                        <h3>🔊 Audio Alarm</h3>
-                        <div class="info-icon" title="Local buzzer to alert nearby pedestrians and security.">ℹ</div>
-                    </div>
-                    <div class="card-value" id="alarm-status">OFF</div>
-                </div>
+            <div class="sensor">
+                <strong>Status:</strong> <span style="color: #4cc9f0;">Clear</span>
             </div>
         </div>
 
-        <div class="side-panel">
-            <div class="panel-header">EVENT LOGS</div>
-            <div class="log-container" id="log-feed">
-                <div class="log-entry">
-                    <span class="log-time">--:--:--</span>
-                    System initialized. Waiting for input.
-                </div>
+        <div class="card critical">
+            <h3>Thermal Sensor</h3>
+            <div class="sensor">
+                <strong>Temperature:</strong> <span>38°C</span>
             </div>
-            
-            <div class="controls-area">
-                <button class="btn btn-simulate" onclick="triggerSimulation()">⚠ Simulate Fall Event</button>
-                <button class="btn btn-reset" onclick="resetSystem()">⟳ Reset System</button>
+            <div class="sensor">
+                <strong>Heat Signature:</strong> <span>Detected</span>
             </div>
         </div>
-    </div>
 
-    <script>
-        // --- STATE MACHINE DEFINITION ---
-        const STATES = {
-            IDLE: 'IDLE',
-            MONITORING: 'MONITORING',
-            DETECTING: 'DETECTING',       // Potential threat detected
-            EMERGENCY: 'EMERGENCY',       // Threat confirmed, deploying measures
-            RECOVERY: 'RECOVERY'          // Post-event
-        };
+        <div class="card log">
+            <h3>System Logs</h3>
+            <ul>
+                <li>[10:00:01] System initialized successfully.</li>
+                <li>[10:05:22] Ultrasonic sensor calibration active.</li>
+                <li>[10:15:45] Thermal signature normal.</li>
+                <li>[10:20:00] Wi-Fi connection stable.</li>
+            </ul>
+        </div>
+    </main>
 
-        let currentState = STATES.MONITORING;
-        let simulationInterval;
+    <footer>
+        &copy; 2025 Project Dashboard
+    </footer>
 
-        // UI References
-        const els = {
-            banner: document.getElementById('emergency-banner'),
-            badge: document.getElementById('system-state-badge'),
-            ultraVal: document.getElementById('ultra-val'),
-            ultraConf: document.getElementById('ultra-conf'),
-            thermVal: document.getElementById('therm-val'),
-            thermConf: document.getElementById('therm-conf'),
-            pirVal: document.getElementById('pir-val'),
-            net: document.getElementById('net-status'),
-            gsm: document.getElementById('gsm-status'),
-            alarm: document.getElementById('alarm-status'),
-            cardNet: document.getElementById('card-net'),
-            cardGsm: document.getElementById('card-gsm'),
-            cardAlarm: document.getElementById('card-alarm'),
-            logs: document.getElementById('log-feed')
-        };
-
-        // --- CORE FUNCTIONS ---
-
-        function logEvent(message, type = 'info') {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-GB', { hour12: false }); // 24h format
-            
-            const div = document.createElement('div');
-            div.className = 'log-entry';
-            div.innerHTML = `<span class="log-time">${timeStr}</span> <span>${message}</span>`;
-            
-            els.logs.prepend(div); // Add to top
-        }
-
-        function updateState(newState) {
-            currentState = newState;
-            els.badge.innerText = newState;
-
-            // Visual State Management
-            if (newState === STATES.MONITORING) {
-                els.banner.className = 'banner-monitoring';
-                els.banner.innerText = "SYSTEM STATUS: MONITORING";
-                els.badge.style.background = '#10b981'; // Green
-                
-                // Reset Actuators visually
-                els.net.innerText = "LOCKED";
-                els.net.style.color = "#94a3b8";
-                els.gsm.innerText = "STANDBY";
-                els.gsm.style.color = "#94a3b8";
-                els.cardNet.classList.remove('active-alarm');
-                els.cardGsm.classList.remove('active-alarm');
-                els.cardAlarm.classList.remove('active-alarm');
-            } 
-            else if (newState === STATES.DETECTING) {
-                els.banner.className = 'banner-monitoring'; // Still yellow/neutral
-                els.banner.style.backgroundColor = '#f59e0b';
-                els.banner.innerText = "⚠️ ANOMALY DETECTED - VERIFYING";
-                els.badge.style.background = '#f59e0b';
-            }
-            else if (newState === STATES.EMERGENCY) {
-                els.banner.className = 'banner-critical';
-                els.banner.innerText = "🚨 EMERGENCY: FALL DETECTED - DEPLOYING SAFETY";
-                els.badge.style.background = '#ef4444';
-                
-                // Actuator Visuals
-                els.net.innerText = "DEPLOYED";
-                els.net.style.color = "#ef4444";
-                els.cardNet.classList.add('active-alarm');
-
-                els.gsm.innerText = "SENDING...";
-                els.cardGsm.classList.add('active-alarm');
-                
-                els.alarm.innerText = "RINGING";
-                els.cardAlarm.classList.add('active-alarm');
-            }
-        }
-
-        // --- SIMULATION LOGIC ---
-
-        function triggerSimulation() {
-            if (currentState === STATES.EMERGENCY) return;
-            
-            logEvent("Simulation Started: Human approach detected.");
-            updateState(STATES.DETECTING);
-
-            let step = 0;
-            
-            // Clear any existing loop
-            if (simulationInterval) clearInterval(simulationInterval);
-
-            simulationInterval = setInterval(() => {
-                step++;
-
-                // Step 1: Object gets closer (Ultrasonic drops)
-                if (step <= 3) {
-                    const dist = 120 - (step * 30); // 90, 60, 30
-                    const conf = 70 + (step * 8);   // Increasing confidence
-                    
-                    els.ultraVal.innerText = `${dist} cm`;
-                    els.ultraVal.style.color = dist < 50 ? '#f59e0b' : '#10b981';
-                    els.ultraConf.innerText = `${conf}%`;
-                    
-                    els.thermVal.innerText = "Warm Body";
-                    els.thermConf.innerText = `${conf + 2}%`;
-                    
-                    els.pirVal.innerText = "Motion Detected";
-                }
-
-                // Step 2: Critical Threshold Crossed -> EMERGENCY
-                if (step === 4) {
-                    els.ultraVal.innerText = "15 cm";
-                    els.ultraVal.style.color = "#ef4444";
-                    els.ultraConf.innerText = "99%";
-                    
-                    logEvent("CRITICAL: Distance < 20cm. Body Heat Confirmed.");
-                    updateState(STATES.EMERGENCY);
-                }
-
-                // Step 3: Deployment Actions
-                if (step === 5) {
-                    logEvent("ACTUATOR: Safety Net Solenoid Triggered.");
-                }
-
-                if (step === 6) {
-                    els.gsm.innerText = "SENT";
-                    els.gsm.style.color = "#ef4444";
-                    logEvent("COMMS: SMS sent to +91 98XXX XXXXX (Lat: 17.38, Long: 78.48)");
-                }
-
-                if (step > 8) {
-                    clearInterval(simulationInterval);
-                    logEvent("System holding in Emergency State. Reset required.");
-                }
-
-            }, 1000); // 1 second per step
-        }
-
-        function resetSystem() {
-            if (simulationInterval) clearInterval(simulationInterval);
-            
-            logEvent("System Reset initiated by user.");
-            
-            // Reset Values
-            els.ultraVal.innerText = "120 cm";
-            els.ultraVal.style.color = "#10b981";
-            els.ultraConf.innerText = "98%";
-            
-            els.thermVal.innerText = "Normal";
-            els.thermConf.innerText = "92%";
-            
-            els.pirVal.innerText = "No Motion";
-            els.alarm.innerText = "OFF";
-
-            updateState(STATES.MONITORING);
-        }
-
-        // Initial Start
-        updateState(STATES.MONITORING);
-        logEvent("System Boot Sequence Complete. Sensors Online.");
-
-    </script>
 </body>
 </html>
