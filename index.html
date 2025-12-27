@@ -1,142 +1,318 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="theme-default">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Dashboard</title>
+    <title>SKYSAFE | Multi-Theme Dashboard</title>
     <style>
-        /* YOUR CSS PASED HERE */
+        /* =========================
+           1. CORE VARIABLES & RESET
+           ========================= */
+        :root {
+            --bg-body: #0b0f14;
+            --bg-card: #151e27;
+            --text-main: #e0e0e0;
+            --text-muted: #9ca3af;
+            --border-color: #1f2a36;
+        }
+
+        /* Dark Mode overrides (if needed later) */
+        .dark {
+            --bg-body: #000000;
+        }
+
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: #0b0f14;
-            color: #e0e0e0;
+            background: var(--bg-body);
+            color: var(--text-main);
+            transition: background 0.3s ease;
         }
 
+        /* =========================
+           2. THEME DEFINITIONS (FROM YOUR REQUEST)
+           ========================= */
+        
+        /* DEFAULT – SKYSAFE YELLOW */
+        .theme-default {
+            --primary: #F59E0B;
+            --secondary: #FCD34D;
+            --accent: #22C55E;
+        }
+        /* IRON MAN MARK II – Red & Gold */
+        .theme-ironman {
+            --primary: #B91C1C;     /* Iron Red */
+            --secondary: #F59E0B;   /* Gold */
+            --accent: #FCD34D;
+        }
+        /* CAPTAIN AMERICA */
+        .theme-captain {
+            --primary: #1D4ED8;     /* Blue */
+            --secondary: #DC2626;   /* Red */
+            --accent: #F9FAFB;      /* White */
+        }
+        /* DEADPOOL */
+        .theme-deadpool {
+            --primary: #7F1D1D;     /* Dark Red */
+            --secondary: #111827;   /* Black */
+            --accent: #EF4444;
+        }
+        /* GAME OF THRONES */
+        .theme-got {
+            --primary: #374151;     /* Steel Gray */
+            --secondary: #111827;   /* Black */
+            --accent: #9CA3AF;      /* Ice Gray */
+        }
+        /* AVATAR – WAY OF WATER */
+        .theme-avatar {
+            --primary: #0284C7;     /* Ocean Blue */
+            --secondary: #0EA5E9;   /* Aqua */
+            --accent: #22D3EE;
+        }
+
+        /* =========================
+           3. THEME BINDINGS
+           ========================= */
+        .bg-theme {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white; /* Ensure text is readable on colored headers */
+        }
+        
+        .text-theme {
+            color: var(--primary);
+        }
+        
+        .border-theme {
+            border-color: var(--primary);
+        }
+
+        /* =========================
+           4. LAYOUT & COMPONENT STYLES
+           ========================= */
         header {
-            padding: 20px;
-            background: #111820;
-            text-align: center;
-            border-bottom: 2px solid #1f2a36;
+            /* This corresponds to: sticky top-0 z-50 px-4 py-4 */
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 16px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         header h1 {
             margin: 0;
-            color: #4cc9f0;
-        }
-
-        .state-idle {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 6px 12px;
-            background: #2a2a2a;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-
-        #alertBanner {
-            background: #b00020;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-weight: bold;
-        }
-
-        .hidden {
-            display: none;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         main {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
+            gap: 20px;
             padding: 20px;
         }
 
         .card {
-            background: #151e27;
-            border-radius: 8px;
-            padding: 16px;
-            border-left: 4px solid #2e3b4e;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--primary); /* Uses theme primary */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s, border-color 0.3s;
         }
 
-        .card.critical {
-            border-left: 4px solid #ff9800; /* Overrides standard border */
+        .card:hover {
+            transform: translateY(-2px);
         }
 
-        .sensor {
-            margin-bottom: 12px;
+        .card-bg {
+            background: #1f2937; /* Lighter dark for settings panel */
         }
 
-        .log ul {
-            list-style: none;
-            padding-left: 0;
-            max-height: 200px;
-            overflow-y: auto;
+        /* =========================
+           5. UTILITIES (Simulating Tailwind classes)
+           ========================= */
+        .hidden { display: none; }
+        .grid { display: grid; }
+        .grid-cols-2 { grid-template-columns: 1fr 1fr; }
+        .gap-3 { gap: 12px; }
+        .p-5 { padding: 20px; }
+        .p-3 { padding: 12px; }
+        .mb-4 { margin-bottom: 16px; }
+        .rounded-2xl { border-radius: 16px; }
+        .rounded-xl { border-radius: 12px; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .text-white { color: white; }
+        .cursor-pointer { cursor: pointer; }
+
+        /* Button resets */
+        button {
+            border: none;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+        button:hover {
+            filter: brightness(1.1);
         }
 
-        .log li {
-            font-size: 0.9em;
-            border-bottom: 1px solid #263241;
-            padding: 6px 0;
-            color: #ccc;
-        }
+        /* Specific Button Colors based on your request */
+        .bg-yellow-100 { background: #FEF3C7; color: #92400E; }
+        .bg-red-700 { background: #B91C1C; color: white; }
+        .bg-blue-700 { background: #1D4ED8; color: white; }
+        .bg-black { background: #111827; }
+        .text-red-500 { color: #EF4444; }
+        .bg-gray-800 { background: #1F2937; color: #E5E7EB; }
+        .bg-sky-500 { background: #0EA5E9; color: white; }
 
-        footer {
-            text-align: center;
-            padding: 10px;
-            background: #111820;
-            font-size: 0.85em;
-            color: #aaa;
+        /* Toggle Button */
+        .btn-icon {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>SKYSAFE Monitor</h1>
-        <span class="state-idle">System Status: Active Monitoring</span>
+    <header class="bg-theme">
+        <div>
+            <h1>SKYSAFE Monitor</h1>
+            <div style="font-size: 0.8rem; opacity: 0.9;">System Active</div>
+        </div>
+        <button onclick="toggleSettings()" class="btn-icon" title="Open Settings">
+            ⚙️
+        </button>
     </header>
 
-    <div id="alertBanner" class="hidden">
-        ⚠️ ALERT: FALL DETECTED
+    <div id="settingsPanel" class="hidden" style="padding: 20px;">
+        
+        <div class="card-bg rounded-2xl p-5 mb-4" style="max-width: 600px; margin: 0 auto; border: 1px solid #374151;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 class="font-semibold text-theme mb-4" style="font-size:1.1rem; margin-top:0;">Theme Selection</h4>
+                <button onclick="toggleSettings()" style="background:none; color:#9ca3af; font-size:1.5rem;">&times;</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="setTheme('theme-default')" class="p-3 rounded-xl bg-yellow-100 font-medium">
+                    SKYSAFE Default
+                </button>
+                <button onclick="setTheme('theme-ironman')" class="p-3 rounded-xl bg-red-700 text-white font-medium">
+                    Iron Man
+                </button>
+                <button onclick="setTheme('theme-captain')" class="p-3 rounded-xl bg-blue-700 text-white font-medium">
+                    Captain America
+                </button>
+                <button onclick="setTheme('theme-deadpool')" class="p-3 rounded-xl bg-black text-red-500 font-medium">
+                    Deadpool
+                </button>
+                <button onclick="setTheme('theme-got')" class="p-3 rounded-xl bg-gray-800 text-gray-200 font-medium">
+                    Game of Thrones
+                </button>
+                <button onclick="setTheme('theme-avatar')" class="p-3 rounded-xl bg-sky-500 text-white font-medium">
+                    Avatar
+                </button>
+            </div>
+            
+            <div style="margin-top: 15px; border-top: 1px solid #374151; padding-top: 10px;">
+                <button onclick="triggerEmergency()" style="width:100%; padding: 10px; background: #EF4444; color: white; border-radius: 8px; font-weight: bold;">
+                    ⚠️ TEST EMERGENCY OVERRIDE
+                </button>
+            </div>
+        </div>
     </div>
 
     <main>
         <div class="card">
-            <h3>Ultrasonic Sensor</h3>
-            <div class="sensor">
-                <strong>Distance:</strong> <span>120 cm</span>
+            <h3 class="text-theme">Ultrasonic Sensor</h3>
+            <div style="margin-bottom: 10px;">
+                <strong>Distance:</strong> <span style="font-size: 1.2em;">120 cm</span>
             </div>
-            <div class="sensor">
-                <strong>Status:</strong> <span style="color: #4cc9f0;">Clear</span>
-            </div>
+            <div>Status: <span style="color: var(--accent);">Normal</span></div>
         </div>
 
-        <div class="card critical">
-            <h3>Thermal Sensor</h3>
-            <div class="sensor">
-                <strong>Temperature:</strong> <span>38°C</span>
+        <div class="card">
+            <h3 class="text-theme">Thermal Camera</h3>
+            <div style="margin-bottom: 10px;">
+                <strong>Temp:</strong> <span style="font-size: 1.2em;">36.5°C</span>
             </div>
-            <div class="sensor">
-                <strong>Heat Signature:</strong> <span>Detected</span>
-            </div>
+            <div>Heat Signature: <span style="color: var(--accent);">None</span></div>
         </div>
 
-        <div class="card log">
-            <h3>System Logs</h3>
-            <ul>
-                <li>[10:00:01] System initialized successfully.</li>
-                <li>[10:05:22] Ultrasonic sensor calibration active.</li>
-                <li>[10:15:45] Thermal signature normal.</li>
-                <li>[10:20:00] Wi-Fi connection stable.</li>
+        <div class="card">
+            <h3 class="text-theme">System Logs</h3>
+            <ul style="padding-left: 20px; color: var(--text-muted); font-size: 0.9em;">
+                <li>System initialized...</li>
+                <li>Theme loaded from storage...</li>
+                <li>Waiting for sensor input...</li>
             </ul>
         </div>
     </main>
 
-    <footer>
-        &copy; 2025 Project Dashboard
-    </footer>
+    <script>
+        // A. Toggle Settings Panel
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
 
+        // B. Set Theme Function (From your request)
+        function setTheme(themeName) {
+            const root = document.documentElement;
+
+            // Remove all known theme classes
+            root.classList.remove(
+                'theme-default',
+                'theme-ironman',
+                'theme-captain',
+                'theme-deadpool',
+                'theme-got',
+                'theme-avatar'
+            );
+
+            // Add the selected theme
+            root.classList.add(themeName);
+            
+            // Persist to localStorage
+            localStorage.setItem('skySafeThemeColor', themeName);
+            
+            console.log(`Theme set to: ${themeName}`);
+        }
+
+        // C. Load Preferences on Startup
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('skySafeThemeColor') || 'theme-default';
+            document.documentElement.classList.add(savedTheme);
+
+            const savedMode = localStorage.getItem('skySafeTheme');
+            if (savedMode === 'dark') {
+                // Logic for dark mode if you implement a toggle later
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        // D. Emergency Override (Optional Cool Feature)
+        function triggerEmergency() {
+            // Forces the primary color to Red temporarily
+            document.documentElement.style.setProperty('--primary', '#EF4444');
+            document.documentElement.style.setProperty('--secondary', '#7F1D1D');
+            alert("EMERGENCY PROTOCOL ACTIVATED: Theme overridden.");
+        }
+
+        // Run on load
+        loadPreferences();
+    </script>
 </body>
 </html>
